@@ -2,7 +2,11 @@
   "name": "@org/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "install:backend": "cd apps/backend && npm install",
+    "install:frontend": "cd apps/frontend && npm install",
+    "postinstall": "run-p install:*"
+  },
   "private": true,
   "dependencies": {
     "@swc/helpers": "~0.5.2",
@@ -40,6 +44,7 @@
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "jsdom": "~22.1.0",
+    "npm-run-all": "^4.1.5",
     "nx": "17.2.8",
     "prettier": "^2.6.2",
     "typescript": "~5.2.2",
