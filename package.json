@@ -5,7 +5,10 @@
   "scripts": {
     "install:backend": "cd apps/backend && npm install",
     "install:frontend": "cd apps/frontend && npm install",
-    "postinstall": "run-p install:*"
+    "postinstall": "run-p install:*",
+    "frontend": "nx start frontend",
+    "backend": "nx start:dev backend",
+    "start": "npm-run-all --parallel frontend backend"
   },
   "private": true,
   "dependencies": {
