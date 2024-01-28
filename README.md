@@ -7,7 +7,13 @@
 
 ## Start the app
 
-To start the development server run `nx serve org`. Open your browser and navigate to http://localhost:4200/. Happy coding!
+run `npm i` - will install all dependencies
+
+to run both backend and frontend at the same time run: `npx nx run-many -t start`
+to start them individually run: `npx nx start backend` or npx nx start frontend`
+
+to run prettier and check all files run: `npx nx format:check --all`
+to run prettier and format all files run: `npx nx format:write --all`
 
 
 ## Generate code
