@@ -1,8 +1,5 @@
-import * as frontendRowTypes from '../frontend/RowSchema'
 import * as dbTimesheetTypes from '../schemas/Timesheet'
-import * as requestSchemas from '../schemas/UpdateTimesheet'
-import {FrontendTimeSheetSchema} from '../frontend/TimesheetSchema'
-import * as frontendTypes from '../frontend/CellTypes'
+import * as sharedSchemas from '@org/schemas';
 
 /*
     Code for converting from the frontend to our backend equivalents. Useful for actually processing this to be stored in our database / align with what our 
@@ -37,19 +34,19 @@ export class frontendEntryConversions {
     /*
         Delegate that converts the item we are inserting to its database equivalent so that it can actually exist on the table 
     */
-    public static insertConversion(body: requestSchemas.InsertRequest) : requestSchemas.InsertRequest {
+    public static insertConversion(body: sharedSchemas.InsertRequest) : sharedSchemas.InsertRequest {
         
         switch (body.Type) {
-            case requestSchemas.TimesheetListItems.TABLEDATA:
+            case sharedSchemas.TimesheetListItems.TABLEDATA:
                 return {
                     ...body, 
-                    Item: this.toDBRow(frontendRowTypes.RowSchema.parse(body.Item))
+                    Item: this.toDBRow(sharedSchemas.TimesheetEntrySchema.parse(body.Item))
                 
                 }
-            case requestSchemas.TimesheetListItems.SCHEDULEDATA:
+            case sharedSchemas.TimesheetListItems.SCHEDULEDATA:
                 throw new Error("Not yet implemented")
 
-            case requestSchemas.TimesheetListItems.WEEKNOTES:
+            case sharedSchemas.TimesheetListItems.WEEKNOTES:
                 throw new Error("Not yet implemented")
 
             default:
@@ -60,9 +57,9 @@ export class frontendEntryConversions {
      /*
         Delegate that converts the item we are updating to its database equivalent so that it can actually exist on the table 
     */
-    public static updateConversion(body: requestSchemas.UpdateRequest) : requestSchemas.UpdateRequest {
+    public static updateConversion(body: sharedSchemas.UpdateRequest) : sharedSchemas.UpdateRequest {
         switch (body.Type) {
-            case requestSchemas.TimesheetListItems.TABLEDATA:
+            case sharedSchemas.TimesheetListItems.TABLEDATA:
 
                 const convertedKey = this.hoursDataMappings[body.Attribute].finalKey; 
                 const convertedValue = this.hoursDataMappings[body.Attribute].conversionFn(body.Data) 
@@ -71,9 +68,9 @@ export class frontendEntryConversions {
                     Attribute: convertedKey, 
                     Data: convertedValue
                 }
-            case requestSchemas.TimesheetListItems.SCHEDULEDATA:
+            case sharedSchemas.TimesheetListItems.SCHEDULEDATA:
                 throw new Error("Not yet implemented")
-            case requestSchemas.TimesheetListItems.WEEKNOTES:
+            case sharedSchemas.TimesheetListItems.WEEKNOTES:
                 throw new Error("Not yet implemented")
             default:
                 throw new Error("Invalid conversion type provided"); 
@@ -108,9 +105,9 @@ export class frontendEntryConversions {
     }
 
     // Converts a frontend cell type to our database equivalent. 
-    private static toDBType(entryType: frontendRowTypes.RowType): dbTimesheetTypes.CellType {
+    private static toDBType(entryType: sharedSchemas..RowType): dbTimesheetTypes.CellType {
         switch (entryType) {
-            case frontendTypes.CellType.Regular:
+            case sharedSchemas.CellType.REGULAR:
                 return dbTimesheetTypes.CellType.REGULAR; 
             case frontendTypes.CellType.PTO:
                 return dbTimesheetTypes.CellType.PTO; 

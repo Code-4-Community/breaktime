@@ -15,8 +15,6 @@ export const enum TimesheetOperations {
     CREATE_TIMESHEET = "CREATE_TIMESHEET"
 } 
 
-
-
 export const enum TimesheetListItems {
     TABLEDATA = "TABLEDATA", 
     SCHEDULEDATA = "SCHEDULEDATA", 
