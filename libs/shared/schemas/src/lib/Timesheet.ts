@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CellType } from "./CellTypes";
 
 /*
 -------------------------------------------------------------------------------------------------------------------
@@ -43,11 +44,6 @@ export const TimeEntrySchema = z.object({
   AuthorUUID: z.string(),
 })
 
-
-export enum CellType {
-  REGULAR = "Time Worked", 
-  PTO = "PTO"
-}
 
 /**
  * Represents the database schema for a single shift or entry in the weekly timesheet. 

@@ -1,16 +1,10 @@
 import { z } from "zod";
-import { RowSchema, CommentSchema, ScheduledRowSchema } from "./RowSchema"
-import * as dbtypes from './Timesheet'
+import { NoteSchema, TimesheetEntrySchema, ScheduleEntrySchema } from "./Timesheet";
 
-/*
--------------------------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------------------------------
----------------------------------DELETE WHEN MONOREPO CREATED------------------------------------------------------
-                            SEE BACKEND DIRECTORY FOR ALL DOCUMENTATION / COMMENTS 
--------------------------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------------------------------
-
-*/
+/**
+ * Schemas for all 'UpdateTimesheet' requests. This includes inserting new data, updating current data, deleting data,
+ * creating a new week's timesheet, and changing the status of a current timesheet.
+ */
 
 // Currently supported timesheet operations 
 export const enum TimesheetOperations {
@@ -39,7 +33,7 @@ export type DeleteRequest = z.infer<typeof DeleteRequest>
 
 export const InsertRequest = z.object({
     Type: availableListTypes, 
-    Item: z.union([RowSchema, CommentSchema, ScheduledRowSchema, dbtypes.TimesheetEntrySchema]), 
+    Item: z.union([TimesheetEntrySchema, NoteSchema, ScheduleEntrySchema]), 
 }) 
 export type InsertRequest = z.infer<typeof InsertRequest> 
 /*
