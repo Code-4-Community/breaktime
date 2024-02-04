@@ -8,7 +8,8 @@
     "postinstall": "run-p install:*",
     "frontend": "nx start frontend",
     "backend": "nx start:dev backend",
-    "start": "npm-run-all --parallel frontend backend"
+    "start": "npm-run-all --parallel frontend backend",
+    "prepare": "husky install"
   },
   "private": true,
   "dependencies": {
@@ -46,12 +47,17 @@
     "eslint-plugin-playwright": "^0.15.3",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "husky": "^9.0.10",
     "jsdom": "~22.1.0",
+    "lint-staged": "^15.2.1",
     "npm-run-all": "^4.1.5",
     "nx": "17.2.8",
     "prettier": "^2.6.2",
     "typescript": "~5.2.2",
     "vite": "^5.0.0",
     "vitest": "~0.34.6"
+  },
+  "lint-staged": {
+    "*": "npx nx format:write --files"
   }
 }
