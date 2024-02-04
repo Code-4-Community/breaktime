@@ -9,6 +9,8 @@
 
 run `npm i` - will install all dependencies
 
+for the backend you must add an .env, reach out to tech leads/any one on the team for it.
+
 
 to run both backend and frontend at the same time run: `npx nx run-many -t start`
 
@@ -18,6 +20,8 @@ to start them individually run: `npx nx start backend` or npx nx start frontend`
 to run prettier and check all files run: `npx nx format:check --all`
 
 to run prettier and format all files run: `npx nx format:write --all`
+
+
 
 
 ## Generate code
