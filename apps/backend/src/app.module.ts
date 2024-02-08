@@ -5,9 +5,10 @@ import { AuthModule } from "./aws/auth.module";
 
 import { AuthenticationMiddleware } from "./aws/middleware/authentication.middleware";
 import { UserModule } from "./users/users.module";
+import { TimesheetModule } from "./timesheet/timesheet.module";
 
 @Module({
-  imports: [AuthModule, UserModule],
+  imports: [AuthModule, UserModule, TimesheetModule],
   controllers: [AppController],
   providers: [AppService],
 })
