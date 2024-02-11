@@ -9,6 +9,7 @@ import moment from "moment";
 import { useToast } from "@chakra-ui/react";
 import { UserContext } from "./UserContext";
 import { TimesheetStatus } from "src/schemas/TimesheetSchema";
+import { createToast } from "./utils";
 
 interface submitCardProps {
   timesheetId: number;
@@ -23,9 +24,6 @@ export default function SubmitCard(props: submitCardProps) {
 
   /** Whether or not the logged-in user has submitted this timesheet yet.*/
   const [timesheetSubmitted, setTimesheetSubmitted] = useState(false);
-
-  /** The date and time (as a moment) that the logged-in user submitted/reviewed/finalized this timesheet.*/
-  const [submitDate, setSubmitDate] = useState(null);
 
   /**
    *   The card state which corresponds to the latest status update from the timesheet. Corresponds to card color.
@@ -60,11 +58,6 @@ export default function SubmitCard(props: submitCardProps) {
 
     const isSubmitted = statusEntry !== undefined;
     setTimesheetSubmitted(isSubmitted);
-
-    // Set the submitted date to when the corresponding status entry was logged for the user type
-    if (isSubmitted && statusEntry.Date !== undefined) {
-      setSubmitDate(moment.unix(statusEntry.Date));
-    }
 
     // Determine the latest status update to set the card state
     if (props.timesheetStatus.Finalized !== undefined) {
@@ -119,20 +112,24 @@ export default function SubmitCard(props: submitCardProps) {
       // TODO: Confirm successful 2xx code responSse from API
       props.refreshTimesheetCallback();
 
-      toast({
-        title: "Successful submission!",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast(
+        createToast({
+          title: "Successful submission!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      );
     } catch (err) {
       console.log(err);
-      toast({
-        title: "Uh oh, something went wrong...",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast(
+        createToast({
+          title: "Uh oh, something went wrong...",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      );
       return;
     }
   };
