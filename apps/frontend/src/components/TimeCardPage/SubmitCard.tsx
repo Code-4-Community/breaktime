@@ -204,11 +204,7 @@ export default function SubmitCard(props: submitCardProps) {
   );
 }
 
-function customDateFormat(date) {
-  const dateX = new Date(date * 1000);
-  return dateX.toLocaleDateString("en-US", {
-    year: "2-digit",
-    month: "2-digit",
-    day: "2-digit",
-  });
+/** Standardized moment.format() wrapper for epoch to string timestamps */
+function customDateFormat(date: number): string {
+  return moment.unix(date).format("MM/DD/YYYY HH:mm");
 }
