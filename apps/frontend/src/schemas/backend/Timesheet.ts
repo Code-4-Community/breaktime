@@ -43,7 +43,11 @@ export const TimeEntrySchema = z.object({
   AuthorUUID: z.string(),
 })
 
-
+/* 
+  Supported type of cells for each row in a timesheet 
+    @REGULAR - a regular cell
+    @PTO - Cell signifying paid time off (PTO) 
+*/
 export enum CellType {
   REGULAR = "Time Worked", 
   PTO = "PTO"
@@ -72,14 +76,18 @@ export const StatusEntryType = z.union(
   }), 
   z.undefined()]); 
 
-// Status type contains the four stages of the pipeline we have defined 
-export const TimesheetStatus = z.object({
+// Status type contains the three stages of the pipeline we have defined 
+export const TimesheetStatusSchema = z.object({
   HoursSubmitted: StatusEntryType, 
   HoursReviewed: StatusEntryType,
-  ScheduleSubmitted: StatusEntryType, 
   Finalized: StatusEntryType 
 });
 
+export enum TimesheetStatusType {
+  HOURS_SUBMITTED="HoursSubmitted",
+  HOURS_REVIEWED="HoursReviewed",
+  FINALIZED="Finalized"
+}
 
 
 /**
@@ -89,14 +97,14 @@ export const TimeSheetSchema = z.object({
   TimesheetID: z.number(), 
   UserID: z.string(), 
   StartDate: z.number(),
-  Status: TimesheetStatus,
+  Status: TimesheetStatusSchema,
   CompanyID: z.string(), 
   HoursData: z.array(TimesheetEntrySchema).default([]), 
   ScheduleData: z.array(ScheduleEntrySchema).default([]),
   WeekNotes: z.array(NoteSchema).default([]),
 })
 
-export type TimesheetStatus = z.infer<typeof TimesheetStatus>
+export type TimesheetStatus = z.infer<typeof TimesheetStatusSchema>
 export type TimeEntrySchema = z.infer<typeof TimeEntrySchema> 
 export type ScheduleEntrySchema = z.infer<typeof ScheduleEntrySchema> 
 export type NoteSchema = z.infer<typeof NoteSchema>
