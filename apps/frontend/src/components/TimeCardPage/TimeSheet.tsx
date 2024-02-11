@@ -29,7 +29,7 @@ import {
 
 import { TIMESHEET_DURATION, TIMEZONE } from "src/constants";
 
-import { Review_Stages, TABLE_COLUMNS, CommentType } from "./types";
+import { TABLE_COLUMNS, CommentType } from "./types";
 import moment, { Moment } from "moment-timezone";
 
 import apiClient from "../Auth/apiClient";

@@ -1,5 +1,3 @@
-import { CardState } from "./types";
-
 import React, { useState, useEffect, useContext } from "react";
 import { Box, Card, CardBody, CardFooter, Button } from "@chakra-ui/react";
 import { DEFAULT_COLORS } from "src/constants";
@@ -24,7 +22,7 @@ export default function SubmitCard(props: submitCardProps) {
   const currUser = useContext(UserContext);
 
   /** Whether or not the logged-in user has submitted this timesheet yet.*/
-  const [submitted, setSubmitted] = useState(false);
+  const [timesheetSubmitted, setTimesheetSubmitted] = useState(false);
 
   /** The date and time (as a moment) that the logged-in user submitted/reviewed/finalized this timesheet.*/
   const [submitDate, setSubmitDate] = useState(null);
@@ -35,7 +33,7 @@ export default function SubmitCard(props: submitCardProps) {
    *   the supervisor had submitted their timesheet review, the card state would be CardState.InReviewAdmin for
    *   any associate, supervisor, or admin that was viewing the timesheet.
    */
-  const [state, setState] = useState(CardState.Unsubmitted);
+  const [cardState, setCardState] = useState(TimesheetStatus.UNSUBMITTED);
 
   // Run whenever there's an update to the current logged in user (i.e. re-render the correct submission status for the user type)
   useEffect(() => {
@@ -61,7 +59,7 @@ export default function SubmitCard(props: submitCardProps) {
     }
 
     const isSubmitted = statusEntry !== undefined;
-    setSubmitted(isSubmitted);
+    setTimesheetSubmitted(isSubmitted);
 
     // Set the submitted date to when the corresponding status entry was logged for the user type
     if (isSubmitted && statusEntry.Date !== undefined) {
@@ -70,13 +68,13 @@ export default function SubmitCard(props: submitCardProps) {
 
     // Determine the latest status update to set the card state
     if (props.timesheetStatus.Finalized !== undefined) {
-      setState(CardState.AdminFinalized);
+      setCardState(TimesheetStatus.FINALIZED);
     } else if (props.timesheetStatus.HoursReviewed !== undefined) {
-      setState(CardState.InReviewAdmin);
+      setCardState(TimesheetStatus.HOURS_REVIEWED);
     } else if (props.timesheetStatus.HoursSubmitted !== undefined) {
-      setState(CardState.InReviewSupervisor);
+      setCardState(TimesheetStatus.HOURS_SUBMITTED);
     } else {
-      setState(CardState.Unsubmitted);
+      setCardState(TimesheetStatus.UNSUBMITTED);
     }
   }, [currUser, props.timesheetStatus, props.timesheetId]);
 
@@ -102,6 +100,8 @@ export default function SubmitCard(props: submitCardProps) {
     // Update the current timesheet to be submitted by the logged-in user.
     // The type of status can be determined on the backend by the user type
     try {
+      // TODO: the parsing of the TimesheetUpdateRequest should really be done in the apiClient - ideally, we don't deal w/ backend schemas at all anywhere other than
+      // the ApiClient file
       const response = await ApiClient.updateTimesheet(
         updateSchemas.TimesheetUpdateRequest.parse({
           TimesheetID: props.timesheetId,
@@ -144,10 +144,10 @@ export default function SubmitCard(props: submitCardProps) {
     >
       <Card
         bg={
-          state === CardState.AdminFinalized
+          cardState === TimesheetStatus.FINALIZED
             ? "success"
-            : state === CardState.InReviewAdmin ||
-              state === CardState.InReviewSupervisor
+            : cardState === TimesheetStatus.HOURS_REVIEWED ||
+              cardState === TimesheetStatus.HOURS_SUBMITTED
             ? "warning"
             : "danger"
         }
@@ -157,48 +157,48 @@ export default function SubmitCard(props: submitCardProps) {
       >
         <CardBody>
           <Button onClick={submitAction}>
-            {submitted ? "Resubmit" : "Submit!"}
+            {timesheetSubmitted ? "Resubmit" : "Submit!"}
           </Button>
         </CardBody>
-          <CardFooter>
-            {/* TODO: The AuthorIDs below should all be replaced with calls to the API and then have a User profile card there instead (or at least the name, rather than ID lol) */}
-            <div>
-              {props.timesheetStatus.HoursSubmitted &&
-              props.timesheetStatus.HoursSubmitted.Date ? (
-                <p>
-                  Associate: {props.timesheetStatus.HoursSubmitted.AuthorID},{" "}
-                  <br />
-                  Submitted on:{" "}
-                  {customDateFormat(props.timesheetStatus.HoursSubmitted.Date)}
-                </p>
-              ) : (
-                <p>Associate: Unsubmitted</p>
-              )}
+        <CardFooter>
+          {/* TODO: The AuthorIDs below should all be replaced with calls to the API and then have a User profile card there instead (or at least the name, rather than ID lol) */}
+          <div>
+            {props.timesheetStatus.HoursSubmitted &&
+            props.timesheetStatus.HoursSubmitted.Date ? (
+              <p>
+                Associate: {props.timesheetStatus.HoursSubmitted.AuthorID},{" "}
+                <br />
+                Submitted on:{" "}
+                {customDateFormat(props.timesheetStatus.HoursSubmitted.Date)}
+              </p>
+            ) : (
+              <p>Associate: Unsubmitted</p>
+            )}
 
-              {props.timesheetStatus.HoursReviewed &&
-              props.timesheetStatus.HoursReviewed.Date ? (
-                <p>
-                  Supervsior: {props.timesheetStatus.HoursReviewed.AuthorID},{" "}
-                  <br />
-                  Submitted on:{" "}
-                  {customDateFormat(props.timesheetStatus.HoursReviewed.Date)}
-                </p>
-              ) : (
-                <p>Supervisor: Unsubmitted</p>
-              )}
+            {props.timesheetStatus.HoursReviewed &&
+            props.timesheetStatus.HoursReviewed.Date ? (
+              <p>
+                Supervsior: {props.timesheetStatus.HoursReviewed.AuthorID},{" "}
+                <br />
+                Submitted on:{" "}
+                {customDateFormat(props.timesheetStatus.HoursReviewed.Date)}
+              </p>
+            ) : (
+              <p>Supervisor: Unsubmitted</p>
+            )}
 
-              {props.timesheetStatus.Finalized &&
-              props.timesheetStatus.Finalized.Date ? (
-                <p>
-                  Admin: {props.timesheetStatus.Finalized.AuthorID}, <br />
-                  Submitted on:{" "}
-                  {customDateFormat(props.timesheetStatus.Finalized.Date)}
-                </p>
-              ) : (
-                <p>Admin: Unsubmitted</p>
-              )}
-            </div>
-          </CardFooter>
+            {props.timesheetStatus.Finalized &&
+            props.timesheetStatus.Finalized.Date ? (
+              <p>
+                Admin: {props.timesheetStatus.Finalized.AuthorID}, <br />
+                Submitted on:{" "}
+                {customDateFormat(props.timesheetStatus.Finalized.Date)}
+              </p>
+            ) : (
+              <p>Admin: Unsubmitted</p>
+            )}
+          </div>
+        </CardFooter>
       </Card>
     </Box>
   );

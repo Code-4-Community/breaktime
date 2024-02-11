@@ -26,13 +26,6 @@ export enum Color {
   Gray = "gray",
 }
 
-export const enum Review_Stages {
-  UNSUBMITTED = "Not-Submitted",
-  EMPLOYEE_SUBMITTED = "Employee Submitted",
-  ADMIN_REVIEW = "Review (Breaktime)",
-  APPROVED = "Approved",
-}
-
 export const TABLE_COLUMNS = [
   "Type",
   "Date",
@@ -41,14 +34,6 @@ export const TABLE_COLUMNS = [
   "Hours",
   "Comment",
 ];
-
-export enum CardState {
-  Rejected = "Rejected",
-  InReviewSupervisor = "In Review - Supervisor",
-  InReviewAdmin = "In Review - Admin",
-  AdminFinalized = "Finalized by Admin",
-  Unsubmitted = "Unsubmitted",
-}
 
 export enum UserTypes {
   Associate = "Associate",
