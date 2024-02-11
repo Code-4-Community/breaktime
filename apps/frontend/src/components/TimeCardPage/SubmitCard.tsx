@@ -78,7 +78,7 @@ export default function SubmitCard(props: submitCardProps) {
     } else {
       setState(CardState.Unsubmitted);
     }
-  }, [currUser, props.timesheetStatus]);
+  }, [currUser, props.timesheetStatus, props.timesheetId]);
 
   const submitAction = async () => {
     console.log("Current user id:", currUser.UserID);
@@ -160,7 +160,6 @@ export default function SubmitCard(props: submitCardProps) {
             {submitted ? "Resubmit" : "Submit!"}
           </Button>
         </CardBody>
-        {submitted && (
           <CardFooter>
             {/* TODO: The AuthorIDs below should all be replaced with calls to the API and then have a User profile card there instead (or at least the name, rather than ID lol) */}
             <div>
@@ -200,7 +199,6 @@ export default function SubmitCard(props: submitCardProps) {
               )}
             </div>
           </CardFooter>
-        )}
       </Card>
     </Box>
   );
