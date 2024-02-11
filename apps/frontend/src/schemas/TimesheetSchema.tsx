@@ -16,6 +16,7 @@ export const TimeSheetSchema = z.object({
 export type TimeSheetSchema = z.infer<typeof TimeSheetSchema>;
 
 export enum TimesheetStatus {
+  UNSUBMITTED = "Unsubmitted",
   HOURS_SUBMITTED = "HoursSubmitted",
   HOURS_REVIEWED = "HoursReviewed",
   FINALIZED = "Finalized",

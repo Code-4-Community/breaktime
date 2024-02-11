@@ -41,7 +41,6 @@ const convertCognitoUser = function (user: CognitoUser): UserSchema {
   };
 };
 
-// TODO: Should this be in a separate file because
 export const getCurrentUser = async function (): Promise<UserSchema> {
   const cognitoCurrentUser = await Auth.currentUserInfo();
   console.log(cognitoCurrentUser);
