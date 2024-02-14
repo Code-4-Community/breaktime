@@ -2,7 +2,7 @@ import { Auth } from "aws-amplify";
 import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
-import { ReportOptions } from "../TimeCardPage/types";
+import { ReportOptions, UserTypes } from "../TimeCardPage/types";
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -67,7 +67,7 @@ export class ApiClient {
   }
 
   public async updateTimesheet(req): Promise<unknown> {
-    return this.axiosInstance.post('/auth/timesheet', req)
+    return this.axiosInstance.post("/auth/timesheet", req);
   }
 
   // TODO: setup endpoint for associate/supervisor/admin so it returns a list of timesheets for given uuid
@@ -93,8 +93,9 @@ export class ApiClient {
       UserID: "abc",
       FirstName: "john",
       LastName: "doe",
-      Type: "Admin",
-      Picture: "https://imgs.search.brave.com/DZmzoTAPlNT9HUb2ISfyTd_sPZab1hG4VcyupoK2gwE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAwLzYxLzU0LzA4/LzM2MF9GXzYxNTQw/ODU1X3lFYmIwTlRr/d3ZJVzdaZG1KeThM/aHU1WHJPMXlweURl/LmpwZw",
+      Type: UserTypes.Admin,
+      Picture:
+        "https://imgs.search.brave.com/DZmzoTAPlNT9HUb2ISfyTd_sPZab1hG4VcyupoK2gwE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAwLzYxLzU0LzA4/LzM2MF9GXzYxNTQw/ODU1X3lFYmIwTlRr/d3ZJVzdaZG1KeThM/aHU1WHJPMXlweURl/LmpwZw",
     };
   }
 
@@ -105,21 +106,26 @@ export class ApiClient {
         UserID: "bcd",
         FirstName: "joe",
         LastName: "jane",
-        Type: "Associate",
+        Type: UserTypes.Associate,
         Picture: "https://www.google.com/panda.png",
       },
     ];
   }
 
   //TODO: hook up to backend
-  public async saveComment(comment: string, timesheetID: number): Promise<Boolean> {
+  public async saveComment(
+    comment: string,
+    timesheetID: number
+  ): Promise<Boolean> {
     return true;
   }
 
   //TODO: hook up to backend
-  public async saveReport(report: ReportOptions, timesheetID: number): Promise<Boolean> {
+  public async saveReport(
+    report: ReportOptions,
+    timesheetID: number
+  ): Promise<Boolean> {
     return true;
   }
-
 }
 export default new ApiClient();
