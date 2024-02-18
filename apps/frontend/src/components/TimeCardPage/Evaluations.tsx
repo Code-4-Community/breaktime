@@ -14,7 +14,6 @@ export function Evaluations({
     null
   );
 
-  console.log("HAS COmments chANGED?  ", commentList);
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
@@ -44,8 +43,6 @@ export function Evaluations({
       setIsModalOpen(false);
     }
   };
-
-  console.log("in evaluations, ", commentList);
 
   return (
     <div className="mt-2 mx-5 mb-4">

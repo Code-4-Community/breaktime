@@ -92,7 +92,6 @@ export function EvaluationModal({
 
   const handleInputOption = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
-    console.log("typing  ", newValue);
     if (commentToEdit) {
       setEditedComment(newValue);
     } else {
@@ -101,12 +100,10 @@ export function EvaluationModal({
   };
 
   const handleSubmit = () => {
-    console.log(commentToEdit);
     if (commentToEdit) {
       const updatedComment = { ...commentToEdit, Content: editedComment };
       onCommentSubmit(updatedComment);
       closeCommentForm();
-      console.log("hit submit in edit ");
     } else {
       let newCommentContent = selectedOption;
       if (selectedOption === "option5") {
@@ -133,13 +130,11 @@ export function EvaluationModal({
       );
       setCommentList(updatedComments);
       onCommentDelete(commentToEdit);
-      console.log("testing delete", commentList);
-      setSelectedComment(null); // Clear the selected comment after deletion
+      setSelectedComment(null);
       closeCommentForm();
     }
   };
 
-  console.log("is open? ", isOpenCommentForm);
   return (
     <Modal isOpen={isOpen} onClose={closeCommentForm}>
       <ModalContent>

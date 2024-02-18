@@ -368,8 +368,6 @@ export default function Page() {
   };
 
   const handleCommentSubmit = (comment: Comment) => {
-    console.log("setting comments ", comment);
-    console.log("comment list ", comments);
     setComments([...comments, comment]);
     closeEvaluationForm();
   };
@@ -401,11 +399,8 @@ export default function Page() {
               >
                 Weekly Comments
               </IconButton>
-
-              {console.log("isOpenCommentForm value:", isOpenCommentForm)}
               {isOpenCommentForm && (
                 <EvaluationModal
-                  // isOpen={isOpenCommentForm}
                   isOpen={true}
                   onClose={closeEvaluationForm}
                   onCommentSubmit={handleCommentSubmit}
