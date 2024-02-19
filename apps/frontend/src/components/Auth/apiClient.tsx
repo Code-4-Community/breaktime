@@ -110,9 +110,19 @@ export class ApiClient {
       },
     ];
   }
-
+  // export const NoteSchema = z.object({
+  //   Type: z.enum(["Comment", "Report"]),
+  //   EntryID: z.string(), 
+  //   AuthorUUID: z.string(),
+  //   DateTime: z.number(),
+  //   Content: z.string(),
+  //   State: z.enum(["Active", "Deleted"]),
+  // })
   //TODO: hook up to backend
   public async saveComment(comment: string, timesheetID: number): Promise<Boolean> {
+    // return this.post("/auth/timesheet", {
+    //   timesheet: updatedEntry,
+    // }) as Promise<Boolean>;
     return true;
   }
 
