@@ -67,7 +67,7 @@ function Row(props: RowProps) {
             "Clock-in": <TimeEntry row={fields} field={"Start"} updateFields={updateField} />,
             "Clock-out": <TimeEntry row={fields} field={"End"} updateFields={updateField} />,
             "Hours": <Duration row={fields} />,
-            "Comment": <CommentCell date={fields.Date} comments={fields.Comment} timesheetID={props.TimesheetID}/>,
+            "Comment": <CommentCell row={fields} date={fields.Date} comments={fields.Comment} timesheetID={props.TimesheetID} updateFields={updateField}/>,
         }
         const itemOrdering = ["Type", "Date", "Clock-in", "Clock-out", "Hours", "Comment"];
 

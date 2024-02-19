@@ -27,9 +27,11 @@ export const createToast = (props: UseToastOptions) => {
 export const createNewComment = (
     user: UserSchema,
     type: CommentType,
-    content: string
+    content: string,
+    UUID: string = crypto.randomUUID()
   ) => {
     return {
+      UUID: UUID,
       AuthorID: user?.UserID, // need to add loading logic so user is defined before anything occurs
       Type: type,
       Timestamp: moment().unix(), // TODO: possibly change it to be more specific formatting

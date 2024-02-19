@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions } from "../TimeCardPage/types";
+import { ThemeProvider } from "react-bootstrap";
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -109,11 +110,6 @@ export class ApiClient {
         Picture: "https://www.google.com/panda.png",
       },
     ];
-  }
-
-  //TODO: hook up to backend
-  public async saveComment(comment: string, timesheetID: number): Promise<Boolean> {
-    return true;
   }
 
   //TODO: hook up to backend
