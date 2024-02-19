@@ -30,18 +30,20 @@ export const createToast = (props: UseToastOptions) => {
 };
 
 export const createNewComment = (
-  user: UserSchema,
-  type: CommentType,
-  content: string
-) => {
-  return {
-    AuthorID: user?.UserID, // need to add loading logic so user is defined before anything occurs
-    Type: type,
-    Timestamp: moment().unix(), // TODO: possibly change it to be more specific formatting
-    Content: content,
-    State: CellStatus.Active,
+    user: UserSchema,
+    type: CommentType,
+    content: string,
+    UUID: string = crypto.randomUUID()
+  ) => {
+    return {
+      UUID: UUID,
+      AuthorID: user?.UserID, // need to add loading logic so user is defined before anything occurs
+      Type: type,
+      Timestamp: moment().unix(), // TODO: possibly change it to be more specific formatting
+      Content: content,
+      State: CellStatus.Active,
+    };
   };
-};
 
 // TODO: fix types and add a new type for report but this will do for demo
 export const createNewReport = (

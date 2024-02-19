@@ -36,286 +36,236 @@ import {
   DeleteIcon,
 } from "@chakra-ui/icons";
 
-import { CommentSchema } from "../../../../schemas/RowSchema";
+import { CommentSchema, RowSchema } from "../../../../schemas/RowSchema";
 import { CommentType, CellStatus, Color } from "../../types";
 import { getAllActiveCommentsOfType, createNewComment } from "../../utils";
-import apiClient from "src/components/Auth/apiClient";
-import { createToast } from "../../utils";
 
 const saveEditedComment = (
-  setComments: Function,
-  comments: CommentSchema[],
-  typeOfComment: CommentType,
-  prevComment: CommentSchema,
-  newComment: CommentSchema
-) => {
+  updateFields: Function,
+  row: RowSchema,
+  setComments: Function, 
+  comments: CommentSchema[], 
+  typeOfComment: CommentType, 
+  prevComment: CommentSchema, 
+  newComment: CommentSchema) => {
   // previous comment edited over so set it to deleted
-  prevComment.State = CellStatus.Deleted;
-  setComments(
-    getAllActiveCommentsOfType(typeOfComment, [...comments, newComment])
-  );
-  // TODO: save to DB
-};
-
+  prevComment.State = CellStatus.Deleted
+  var updatedShiftComments = row.Comment; 
+  if (updatedShiftComments === undefined) {
+      updatedShiftComments = comments;
+  }
+  updatedShiftComments = getAllActiveCommentsOfType(typeOfComment, [...comments, newComment]);
+  setComments(updatedShiftComments);
+  //Triggering parent class to update its references here as well 
+  updateFields("Comment", updatedShiftComments); 
+  }
+  
 const deleteComment = (
-  onCloseDisplay: Function,
-  setComments: Function,
-  comments: CommentSchema[],
-  typeOfComment: CommentType,
-  comment: CommentSchema
-) => {
+  updateFields: Function,
+  row: RowSchema,
+  onCloseDisplay: Function, 
+  setComments: Function, 
+  comments: CommentSchema[], 
+  typeOfComment: CommentType, 
+  comment: CommentSchema) => {
   // TODO: add confirmation popup
-  comment.State = CellStatus.Deleted;
-  setComments(getAllActiveCommentsOfType(typeOfComment, comments));
+  comment.State = CellStatus.Deleted
+
   if (comments.length === 1) {
     onCloseDisplay();
   }
-  // TODO: save to DB
-};
-
-interface ShowCommentModalProps {
-  comments: CommentSchema[];
-  setComments: Function;
-  isEditable: boolean;
-  timesheetID: number;
+  var updatedShiftComments = row.Comment; 
+  if (updatedShiftComments === undefined) {
+      updatedShiftComments = comments;
+  }
+  updatedShiftComments = (getAllActiveCommentsOfType(typeOfComment, comments));
+  setComments(updatedShiftComments);
+  //Triggering parent class to update its references here as well 
+  updateFields("Comment", updatedShiftComments); 
 }
 
-export default function ShowCommentModal({
-  comments,
-  setComments,
-  isEditable,
-  timesheetID,
-}: ShowCommentModalProps) {
-  const {
-    isOpen: isOpenDisplay,
-    onOpen: onOpenDisplay,
-    onClose: onCloseDisplay,
-  } = useDisclosure();
-  const {
-    isOpen: isOpenAdd,
-    onOpen: onOpenAdd,
-    onClose: onCloseAdd,
-  } = useDisclosure();
-  const user = useContext(UserContext);
-  let color = Color.Blue;
-
-  const EditableControls = () => {
-    const {
-      isEditing,
-      getSubmitButtonProps,
-      getCancelButtonProps,
-      getEditButtonProps,
-    } = useEditableControls();
-
-    // TODO: change this later to reflect figma
-    return isEditing ? (
-      <ButtonGroup justifyContent="center" size="sm">
-        <Button leftIcon={<CheckIcon />} {...getSubmitButtonProps()} />
-        <Button leftIcon={<CloseIcon />} {...getCancelButtonProps()} />
-      </ButtonGroup>
-    ) : (
-      <Flex justifyContent="right">
-        <Button size="sm" leftIcon={<EditIcon />} {...getEditButtonProps()} />
-      </Flex>
-    );
-  };
-
-  const doCommentsExist = comments.length > 0;
-
-  // no comments so gray it out
-  if (doCommentsExist === false) {
-    color = Color.Gray;
+interface ShowCommentModalProps {
+    comments: CommentSchema[];
+    setComments: Function;
+    updateFields: Function,
+    isEditable: boolean;
+    timesheetID: number;
+    row: RowSchema;
   }
-
-  const DisplayCommentsModal = () => {
-    return (
-      <Modal isOpen={isOpenDisplay} onClose={onCloseDisplay}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <HStack>
-              <Text>View {CommentType.Comment}</Text>
-              <Button onClick={onOpenAdd}>New</Button>
-            </HStack>
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {comments.map((comment) => (
-              <HStack>
-                {/* add UserDisplay card once pr merged in*/}
-                <Editable
-                  isDisabled={!isEditable}
-                  defaultValue={comment.Content}
-                  onSubmit={(value) =>
-                    saveEditedComment(
-                      setComments,
-                      comments,
-                      CommentType.Comment,
-                      comment,
-                      createNewComment(user, CommentType.Comment, value)
-                    )
-                  }
-                >
-                  <EditablePreview />
-
-                  {isEditable && (
-                    <>
-                      <Input as={EditableInput} />
-                      <HStack>
-                        <EditableControls />
-                        <IconButton
-                          aria-label="Delete"
-                          icon={<DeleteIcon />}
-                          onClick={() =>
-                            deleteComment(
-                              onCloseDisplay,
-                              setComments,
-                              comments,
-                              CommentType.Comment,
-                              comment
-                            )
-                          }
-                        />
-                      </HStack>
-                    </>
-                  )}
-                </Editable>
-              </HStack>
-            ))}
-          </ModalBody>
-
-          <ModalFooter></ModalFooter>
-        </ModalContent>
-      </Modal>
-    );
-  };
-
-  const AddCommentModal = () => {
-    const [remark, setRemark] = useState();
+  
+export default function ShowCommentModal(
+  props: ShowCommentModalProps) {
+    const { isOpen: isOpenDisplay, onOpen: onOpenDisplay, onClose: onCloseDisplay } = useDisclosure();
+    const { isOpen: isOpenAdd, onOpen: onOpenAdd, onClose: onCloseAdd } = useDisclosure();
     const user = useContext(UserContext);
-    const toast = useToast();
-
-    const handleRemarkChange = (e) => {
-      setRemark(e.target.value);
+    let color = Color.Blue
+  
+    const EditableControls = () => {
+      const {
+        isEditing,
+        getSubmitButtonProps,
+        getCancelButtonProps,
+        getEditButtonProps,
+      } = useEditableControls();
+  
+      // TODO: change this later to reflect figma
+      return isEditing ? (
+        <ButtonGroup justifyContent="center" size="sm">
+          <Button leftIcon={<CheckIcon />} {...getSubmitButtonProps()} />
+          <Button leftIcon={<CloseIcon />} {...getCancelButtonProps()} />
+        </ButtonGroup>
+      ) : (
+        <Flex justifyContent="right">
+          <Button size="sm" leftIcon={<EditIcon />} {...getEditButtonProps()} />
+        </Flex>
+      );
     };
-
-    const handleSubmit = () => {
-      // TODO: reuse comment validation
-      setComments([
-        ...comments,
-        createNewComment(user, CommentType.Comment, remark),
-      ]);
-      apiClient
-        .saveComment(remark, timesheetID)
-        .then((resp) => {
-          if (resp) {
-            toast(
-              createToast({
-                position: "bottom-right",
-                title: "success.",
-                description: "Your report has been saved.",
-                status: "success",
-              })
-            );
-          } else {
-            toast(
-              createToast({
-                position: "bottom-right",
-                title: "failed",
-                description: "An error occured. Please try again.",
-                status: "error",
-                duration: 9000,
-                isClosable: true,
-              })
-            );
-          }
-        })
-        .catch((err) =>
-          toast(
-            createToast({
-              position: "bottom-right",
-              title: "failed",
-              description: "An error occured. Please try again.",
-              status: "error",
-              duration: 9000,
-              isClosable: true,
-            })
-          )
-        );
-      onCloseAdd();
-    };
-
-    return (
-      <Modal isOpen={isOpenAdd} onClose={onCloseAdd}>
-        <ModalContent>
-          <VStack spacing={4} divider={<StackDivider />}>
-            <ModalHeader>{CommentType.Comment}</ModalHeader>
-
-            <form id="Form" onSubmit={handleSubmit}>
-              <HStack spacing={4}>
-                <label htmlFor="remarks">Remarks</label>
-                <Textarea
-                  id="remarks"
-                  name="remarks"
-                  onChange={handleRemarkChange}
-                  autoComplete="off"
-                />
-              </HStack>
-            </form>
-
-            <ModalFooter>
-              <HStack spacing={10}>
-                <Button onClick={onCloseAdd}>Close</Button>
-                <Button type="submit" onClick={handleSubmit}>
-                  Submit
+  
+    const doCommentsExist = props.comments.length > 0
+  
+    // no comments so gray it out
+    if (doCommentsExist === false) {
+      color = Color.Gray
+    }
+  
+    const DisplayCommentsModal = () => {
+  
+      return (
+        <Modal isOpen={isOpenDisplay} onClose={onCloseDisplay}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              <HStack>
+                <Text>View {CommentType.Comment}</Text>
+                <Button onClick={onOpenAdd}>
+                  New
                 </Button>
               </HStack>
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {props.comments.map(
+                (comment) => (
+                  <HStack>
+                    {/* add UserDisplay card once pr merged in*/}
+                    <Editable
+                      isDisabled={!props.isEditable}
+                      defaultValue={comment.Content}
+                      onSubmit={(value) => saveEditedComment(props.updateFields, props.row, props.setComments, props.comments, CommentType.Comment, comment, createNewComment(user, CommentType.Comment, value, comment.UUID))}
+                    >
+                      <EditablePreview />
+  
+                      {props.isEditable && (
+                        <>
+                          <Input as={EditableInput} />
+                          <HStack>
+                            <EditableControls />
+                            <IconButton aria-label="Delete" icon={<DeleteIcon />} onClick={() => deleteComment(props.updateFields, props.row, onCloseDisplay, props.setComments, props.comments, CommentType.Comment, comment)} />
+                          </HStack>
+                        </>
+                      )}
+                    </Editable>
+  
+                  </HStack>
+                ))}
+            </ModalBody>
+  
+            <ModalFooter>
             </ModalFooter>
-          </VStack>
-        </ModalContent>
-      </Modal>
-    );
-  };
+          </ModalContent>
+        </Modal>
+      )
+    }
+  
+    const AddCommentModal = () => {
+      const [remark, setRemark] = useState();
+      const user = useContext(UserContext);
+      const toast = useToast();
+  
+      const handleRemarkChange = (e) => {
+        setRemark(e.target.value);
+      };
+  
+      const handleSubmit = () => {
+        
+        var updatedShiftComments = props.row.Comment; 
+        if (updatedShiftComments === undefined) {
+            updatedShiftComments = props.comments;
+        }
+        updatedShiftComments = [...updatedShiftComments, createNewComment(user, CommentType.Comment, remark)];
+        props.setComments(updatedShiftComments);
 
-  return (
-    <>
-      <Box color={color}>
-        {doCommentsExist ? (
-          <>
-            <Button
-              colorScheme={color}
-              aria-label="Report"
-              leftIcon={<ChatIcon />}
-              onClick={onOpenDisplay}
-            >
-              {comments.length}
-            </Button>
-            {isEditable && (
+        //Triggering parent class to update its references here as well 
+        props.updateFields("Comment", updatedShiftComments)
+        onCloseAdd()
+      };
+  
+      return (
+        <Modal isOpen={isOpenAdd} onClose={onCloseAdd}>
+          <ModalContent>
+            <VStack spacing={4} divider={<StackDivider />}>
+              <ModalHeader>{CommentType.Comment}</ModalHeader>
+  
+              <form id="Form" onSubmit={handleSubmit}>
+                <HStack spacing={4}>
+                  <label htmlFor="remarks">Remarks</label>
+                  <Textarea
+                    id="remarks"
+                    name="remarks"
+                    onChange={handleRemarkChange}
+                    autoComplete="off"
+                  />
+                </HStack>
+              </form>
+  
+              <ModalFooter>
+                <HStack spacing={10}>
+                  <Button onClick={onCloseAdd}>Close</Button>
+                  <Button type="submit" onClick={handleSubmit}>
+                    Submit
+                  </Button>
+                </HStack>
+              </ModalFooter>
+            </VStack>
+          </ModalContent>
+        </Modal>
+      )
+    }
+  
+    return (
+      <>
+        <Box color={color}>
+          {doCommentsExist ?
+            <>
               <Button
                 colorScheme={color}
-                aria-label="Add Feedback"
-                leftIcon={<AddIcon />}
-                onClick={onOpenAdd}
-              />
-            )}
-          </>
-        ) : (
-          <>
-            {isEditable && (
-              <Button
+                aria-label="Report"
+                leftIcon={<ChatIcon />}
+                onClick={onOpenDisplay} >
+                {props.comments.length}
+              </Button>
+              {props.isEditable &&
+                <Button
+                  colorScheme={color}
+                  aria-label="Add Feedback"
+                  leftIcon={<AddIcon />}
+                  onClick={onOpenAdd} />
+              }
+            </> :
+            <>
+              {props.isEditable && <Button
                 colorScheme={color}
                 aria-label="Report"
                 leftIcon={<ChatIcon />}
                 onClick={onOpenAdd}
               >
                 <AddIcon />
-              </Button>
-            )}
-          </>
-        )}
-      </Box>
-      <DisplayCommentsModal />
-      <AddCommentModal />
-    </>
-  );
-}
+              </Button>}
+            </>
+          }
+        </Box>
+        <DisplayCommentsModal />
+        <AddCommentModal />
+      </>
+    );
+        }

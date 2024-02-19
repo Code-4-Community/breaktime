@@ -56,43 +56,25 @@ function Row(props: RowProps) {
     }
   }, []);
 
-  if (fields !== undefined) {
-    const items = {
-      Type: <TypeCell value={fields.Type} setType={updateField} />,
-      Date: <DateCell date={fields.Date} prevDate={props.prevDate} />,
-      "Clock-in": (
-        <TimeEntry row={fields} field={"Start"} updateFields={updateField} />
-      ),
-      "Clock-out": (
-        <TimeEntry row={fields} field={"End"} updateFields={updateField} />
-      ),
-      Hours: <Duration row={fields} />,
-      Comment: (
-        <CommentCell
-          date={fields.Date}
-          comments={fields.Comment}
-          timesheetID={props.TimesheetID}
-        />
-      ),
-    };
-    const itemOrdering = [
-      "Type",
-      "Date",
-      "Clock-in",
-      "Clock-out",
-      "Hours",
-      "Comment",
-    ];
+    if (fields !== undefined) {
+        const items = {
+            "Type": <TypeCell value={fields.Type} setType={updateField} />,
+            "Date": <DateCell date={fields.Date} prevDate={props.prevDate} />,
+            "Clock-in": <TimeEntry row={fields} field={"Start"} updateFields={updateField} />,
+            "Clock-out": <TimeEntry row={fields} field={"End"} updateFields={updateField} />,
+            "Hours": <Duration row={fields} />,
+            "Comment": <CommentCell row={fields} date={fields.Date} comments={fields.Comment} timesheetID={props.TimesheetID} updateFields={updateField}/>,
+        }
+        const itemOrdering = ["Type", "Date", "Clock-in", "Clock-out", "Hours", "Comment"];
 
-    return (
-      <Fragment>
-        {itemOrdering.map((entry) => (
-          <Td key={entry}>{items[entry]}</Td>
-        ))}
-      </Fragment>
-    );
-  } else {
-    return <Fragment></Fragment>;
-  }
+        return <Fragment>
+            {itemOrdering.map((entry) => <Td key={entry}>{items[entry]}</Td>)}
+        </Fragment>
+
+    } else {
+        return <Fragment>
+
+        </Fragment>
+    }
 }
 export default Row;
