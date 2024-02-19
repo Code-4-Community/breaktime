@@ -225,7 +225,7 @@ export default function Page() {
       setUser(currentUser);
     });
 
-    apiClient.getUser().then((userInfo) => {
+    apiClient.getUser(user).then((userInfo) => {
       if (userInfo.Type === "Supervisor" || userInfo.Type === "Admin") {
         apiClient.getAllUsers().then((users) => {
           setAssociates(users);

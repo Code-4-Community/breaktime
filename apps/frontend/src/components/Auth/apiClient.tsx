@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
+import React, { useState } from 'react';
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -15,7 +16,12 @@ interface ApiClientOptions {
    */
   skipAuth?: boolean;
 }
-export class ApiClient {
+
+
+
+
+export class ApiClient { 
+  
   private axiosInstance: AxiosInstance;
 
   constructor(
@@ -86,17 +92,65 @@ export class ApiClient {
     return this.get("/auth/timesheet") as Promise<string>;
   }
 
+  
+
   // TODO: setup endpoint for getting user information
   // all roles -> return UserSchema for the current user that is logged in
-  public async getUser(): Promise<UserSchema> {
-    return {
-      UserID: "abc",
-      FirstName: "john",
-      LastName: "doe",
-      Type: UserTypes.Admin,
-      Picture:
-        "https://imgs.search.brave.com/DZmzoTAPlNT9HUb2ISfyTd_sPZab1hG4VcyupoK2gwE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAwLzYxLzU0LzA4/LzM2MF9GXzYxNTQw/ODU1X3lFYmIwTlRr/d3ZJVzdaZG1KeThM/aHU1WHJPMXlweURl/LmpwZw",
-    };
+  public async getUser(u): Promise<UserSchema> {
+
+ 
+    // console.log("BEFORE USER ID")
+    // const userId = '4c8c5ad4-a8ab-4c92-b33f-b8f932b9e0b5'
+
+
+    // we now have the current user's user ID, which is passed in as a prop due to the useEffect() in Timesheet.tsx
+    const userId = u.UserID
+
+    // console.log(u)
+    // console.log(userId)
+
+    // console.log("AFTER USER ID")
+
+    // console.log("HELLO")
+    // let user: UserModel = undefined;
+    // const user = undefined
+    var userConverted = {}
+    this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
+      // user = userList[0];
+      // console.log('getUser reponse: ', userList[0]);
+      // console.log("REACHED")
+      // console.log('getUser reponse: ', userList[0]);
+      console.log("USER NOW", userId)
+
+      // console.log(userList)
+      var userType = {}
+
+      // console.log("BEFORE USER list")
+      // console.log(userList[0])
+      // console.log("AFTER USER list")
+
+      if (userList[0].Type === 'breaktime-associate') {
+        userType = UserTypes.Associate
+      }
+      else {
+        userType = UserTypes.Supervisor
+      }
+
+      userConverted =  {
+        UserID: userList[0].userID,
+        FirstName: userList[0].firstName,
+        LastName: userList[0].lastName,
+        Type: userType
+      };
+
+      // console.log(userConverted)
+      return userConverted
+    })
+
+    // console.log("HELLO2")
+    // console.log(userConverted)
+    return userConverted
+
   }
 
   //TODO: hook up to backend, izzys pr has it just not merged yet
