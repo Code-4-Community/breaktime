@@ -94,7 +94,7 @@ export class ApiClient {
   }
 
 
-  // function to create user object from a passed in userId
+  // a function to create user object from a passed in userId
   public async createUser(userId: String): Promise<UserSchema> {
     var userConverted = {}
 
@@ -119,11 +119,10 @@ export class ApiClient {
       };
 
     })
-
     return userConverted
   }
 
-  // function that returns list of multiple users based on list of userIds passed in
+  // a function that returns list of multiple users based on list of userIds passed in
   public async getUsers(userIds: Array<String>): Promise<UserSchema[]> {
     var allUsers = []
 
