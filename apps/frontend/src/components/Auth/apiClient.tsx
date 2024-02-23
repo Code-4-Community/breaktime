@@ -4,6 +4,7 @@ import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
 import React, { useState } from 'react';
+import { getCurrentUser } from "../Auth/UserUtils";
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -92,43 +93,16 @@ export class ApiClient {
     return this.get("/auth/timesheet") as Promise<string>;
   }
 
-  
 
-  // TODO: setup endpoint for getting user information
-  // all roles -> return UserSchema for the current user that is logged in
-  public async getUser(u): Promise<UserSchema> {
-
- 
-    // console.log("BEFORE USER ID")
-    // const userId = '4c8c5ad4-a8ab-4c92-b33f-b8f932b9e0b5'
-
-
-    // we now have the current user's user ID, which is passed in as a prop due to the useEffect() in Timesheet.tsx
-    const userId = u.UserID
-
-    // console.log(u)
-    // console.log(userId)
-
-    // console.log("AFTER USER ID")
-
-    // console.log("HELLO")
-    // let user: UserModel = undefined;
-    // const user = undefined
+  // function to create user object from a passed in userId
+  public async createUser(userId: String): Promise<UserSchema> {
     var userConverted = {}
-    this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
-      // user = userList[0];
-      // console.log('getUser reponse: ', userList[0]);
-      // console.log("REACHED")
-      // console.log('getUser reponse: ', userList[0]);
-      console.log("USER NOW", userId)
 
-      // console.log(userList)
+    await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
+
       var userType = {}
-
-      // console.log("BEFORE USER list")
-      // console.log(userList[0])
-      // console.log("AFTER USER list")
-
+      
+      // set current user's type
       if (userList[0].Type === 'breaktime-associate') {
         userType = UserTypes.Associate
       }
@@ -136,20 +110,38 @@ export class ApiClient {
         userType = UserTypes.Supervisor
       }
 
-      userConverted =  {
+      // create current user
+      userConverted = {
         UserID: userList[0].userID,
         FirstName: userList[0].firstName,
         LastName: userList[0].lastName,
         Type: userType
       };
 
-      // console.log(userConverted)
-      return userConverted
     })
 
-    // console.log("HELLO2")
-    // console.log(userConverted)
     return userConverted
+  }
+
+  // function that returns list of multiple users based on list of userIds passed in
+  public async getUsers(userIds: Array<String>): Promise<UserSchema[]> {
+    var allUsers = []
+
+    userIds.forEach(async (element) => {
+      allUsers.push(await this.createUser(element))
+    });
+
+    return allUsers
+
+  }
+
+  
+  // TODO: setup endpoint for getting user information
+  // all roles -> return UserSchema for the current user that is logged in
+  public async getUser(UserID: String): Promise<UserSchema> {
+    const userId = UserID
+
+    return await this.createUser(userId)  // call upon createUser() function to get User object
 
   }
 
