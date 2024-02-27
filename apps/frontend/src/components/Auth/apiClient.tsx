@@ -94,14 +94,25 @@ export class ApiClient {
   }
 
 
-  // a function to create user object from a passed in userId
-  public async createUser(userId: String): Promise<UserSchema> {
+  // a function that returns list of multiple users based on list of userIds passed in
+  public async getUsers(userIds: String[]): Promise<UserSchema[]> {
+    var allUsers = await Promise.all(userIds.map(userId => this.getUser(userId)));
+
+    return allUsers
+  }
+
+  
+  // TODO: setup endpoint for getting user information
+  // all roles -> return UserSchema for the current user that is logged in
+  public async getUser(UserID: String): Promise<UserSchema> {
+    const userId = UserID
+
     var userConverted = {}
 
     await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
 
       var userType = {}
-      
+
       // set current user's type
       if (userList[0].Type === 'breaktime-associate') {
         userType = UserTypes.Associate
@@ -119,28 +130,8 @@ export class ApiClient {
       };
 
     })
+
     return userConverted
-  }
-
-  // a function that returns list of multiple users based on list of userIds passed in
-  public async getUsers(userIds: Array<String>): Promise<UserSchema[]> {
-    var allUsers = []
-
-    userIds.forEach(async (element) => {
-      allUsers.push(await this.createUser(element))
-    });
-
-    return allUsers
-
-  }
-
-  
-  // TODO: setup endpoint for getting user information
-  // all roles -> return UserSchema for the current user that is logged in
-  public async getUser(UserID: String): Promise<UserSchema> {
-    const userId = UserID
-
-    return await this.createUser(userId)  // call upon createUser() function to get User object
 
   }
 
