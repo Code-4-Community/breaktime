@@ -27,7 +27,7 @@ export class UserService {
     // Determine what primary role should be used when searching, i.e. what permissions should take precedence
     let companyUserList: CompanyUsers[];
     if (user.groups.includes(CognitoRoles.ADMIN)) {
-      throw new Error("Not Implemented")
+      throw new Error("Not Implemented");
       //return this.getUsersForAdmin();
     } else if (user.groups.includes(CognitoRoles.SUPERVISOR)) {
       companyUserList = await this.getUsersForSupervisor(
@@ -49,7 +49,7 @@ export class UserService {
       );
     }
     //return companyUserList;
-    throw new Error("Not Implemented")
+    throw new Error("Not Implemented");
   }
 
   // TODO: this will need to do mapping to company data
@@ -57,13 +57,13 @@ export class UserService {
     return this.getAllUsers();
   }
 
-    /**
+  /**
    * Gets all the relevant users for a given Associate
    * @param user : The Associate who is requesting user information
    * @param companyIds : (optional) List of company IDs to restrict the search to. If empty, search all supervisor companies
-   * @param searchRoles : (optional) List of roles (associate, supervisor, admin) to restrict the search to. 
+   * @param searchRoles : (optional) List of roles (associate, supervisor, admin) to restrict the search to.
    * @param userIds : (optional) List of user IDs to restrict the search to.
-   * @returns 
+   * @returns
    */
   async getUsersForAssociate(
     user: ValidatedUser,
@@ -95,9 +95,9 @@ export class UserService {
    * Gets all the relevant users for a given Supervisor
    * @param user : The Supervisor who is requesting user information
    * @param companyIds : (optional) List of company IDs to restrict the search to. If empty, search all supervisor companies
-   * @param searchRoles : (optional) List of roles (associate, supervisor, admin) to restrict the search to. 
+   * @param searchRoles : (optional) List of roles (associate, supervisor, admin) to restrict the search to.
    * @param userIds : (optional) List of user IDs to restrict the search to.
-   * @returns 
+   * @returns
    */
   async getUsersForSupervisor(
     user: ValidatedUser,
@@ -145,8 +145,8 @@ export class UserService {
     console.log(cognitoUsers);
 
     // Include company information for each user
-    const usersWithCompanies = cognitoUsers.map(this.updateUserWithCompanyData)
-    console.log(usersWithCompanies)
+    const usersWithCompanies = cognitoUsers.map(this.updateUserWithCompanyData);
+    console.log(usersWithCompanies);
 
     return cognitoUsers;
   }
@@ -294,7 +294,7 @@ export class UserService {
     );
     var group = user.Attributes.find(
       (attribute) => attribute.Name === "cognito:groups"
-    )
+    );
     // TODO : refactor into separate 'getAttribute' function so we don't repeat this code
 
     return {

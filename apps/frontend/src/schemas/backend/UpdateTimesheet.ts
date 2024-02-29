@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { RowSchema, CommentSchema, ScheduledRowSchema } from "../RowSchema"
-import * as dbtypes from './Timesheet'
+import { RowSchema, CommentSchema, ScheduledRowSchema } from "../RowSchema";
+import * as dbtypes from "./Timesheet";
 
 /*
 -------------------------------------------------------------------------------------------------------------------
@@ -23,12 +23,12 @@ import * as dbtypes from './Timesheet'
     CREATE-TIMESHEET - Operation for creating a timesheet, if it would be useful to have in the future. 
 */
 export const enum TimesheetOperations {
-    INSERT = "INSERT", 
-    UPDATE = "UPDATE", 
-    DELETE = "DELETE", 
-    STATUS_CHANGE = "STATUS_CHANGE", 
-    CREATE_TIMESHEET = "CREATE_TIMESHEET"
-} 
+  INSERT = "INSERT",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE",
+  STATUS_CHANGE = "STATUS_CHANGE",
+  CREATE_TIMESHEET = "CREATE_TIMESHEET",
+}
 
 /*
     The available types of items that are currently supported in the timesheet that list operations can be performed on. 
@@ -37,12 +37,16 @@ export const enum TimesheetOperations {
         WEEKNOTES - the comments left by an employer for that week 
 */
 export const enum TimesheetListItems {
-    TABLEDATA = "TABLEDATA", 
-    SCHEDULEDATA = "SCHEDULEDATA", 
-    WEEKNOTES = "WEEKNOTES"
+  TABLEDATA = "TABLEDATA",
+  SCHEDULEDATA = "SCHEDULEDATA",
+  WEEKNOTES = "WEEKNOTES",
 }
 
-const availableListTypes = z.enum([TimesheetListItems.TABLEDATA, TimesheetListItems.SCHEDULEDATA, TimesheetListItems.WEEKNOTES])
+const availableListTypes = z.enum([
+  TimesheetListItems.TABLEDATA,
+  TimesheetListItems.SCHEDULEDATA,
+  TimesheetListItems.WEEKNOTES,
+]);
 
 /* 
     The schema for a delete request 
@@ -50,10 +54,10 @@ const availableListTypes = z.enum([TimesheetListItems.TABLEDATA, TimesheetListIt
         @Id: The id of the item we are deleting - to know what to remove 
 */
 export const DeleteRequest = z.object({
-    Type: availableListTypes, 
-    Id: z.string() 
-})
-export type DeleteRequest = z.infer<typeof DeleteRequest> 
+  Type: availableListTypes,
+  Id: z.string(),
+});
+export type DeleteRequest = z.infer<typeof DeleteRequest>;
 
 /*
     The schema for an insert request for an item 
@@ -61,10 +65,15 @@ export type DeleteRequest = z.infer<typeof DeleteRequest>
         @Item: The item we are actually inserting, should be the actual item itself. 
 */
 export const InsertRequest = z.object({
-    Type: availableListTypes, 
-    Item: z.union([RowSchema, CommentSchema, ScheduledRowSchema, dbtypes.TimesheetEntrySchema]), 
-}) 
-export type InsertRequest = z.infer<typeof InsertRequest> 
+  Type: availableListTypes,
+  Item: z.union([
+    RowSchema,
+    CommentSchema,
+    ScheduledRowSchema,
+    dbtypes.TimesheetEntrySchema,
+  ]),
+});
+export type InsertRequest = z.infer<typeof InsertRequest>;
 
 /*
     Schema for updating an item from the three possible list of items in the timesheet 
@@ -74,12 +83,12 @@ export type InsertRequest = z.infer<typeof InsertRequest>
         @Data: The payload we are updating this attribute to be - can be a wide range of things currently 
 */
 export const UpdateRequest = z.object({
-    Type: availableListTypes, 
-    Id: z.string(), 
-    Attribute: z.string(), 
-    Data: z.any() 
-})
-export type UpdateRequest = z.infer<typeof UpdateRequest>
+  Type: availableListTypes,
+  Id: z.string(),
+  Attribute: z.string(),
+  Data: z.any(),
+});
+export type UpdateRequest = z.infer<typeof UpdateRequest>;
 
 /*
     Schema for changing the status of a timesheet 
@@ -90,13 +99,17 @@ export type UpdateRequest = z.infer<typeof UpdateRequest>
         @statusType: 
 */
 export const StatusChangeRequest = z.object({
-    TimesheetId: z.number(),
-    AssociateId: z.string(),
-    authorId: z.string(),
-    dateSubmitted: z.number(),
-    statusType: z.enum([dbtypes.TimesheetStatusType.HOURS_SUBMITTED, dbtypes.TimesheetStatusType.HOURS_REVIEWED, dbtypes.TimesheetStatusType.FINALIZED]),
-})
-export type StatusChangeRequest = z.infer<typeof StatusChangeRequest>
+  TimesheetId: z.number(),
+  AssociateId: z.string(),
+  authorId: z.string(),
+  dateSubmitted: z.number(),
+  statusType: z.enum([
+    dbtypes.TimesheetStatusType.HOURS_SUBMITTED,
+    dbtypes.TimesheetStatusType.HOURS_REVIEWED,
+    dbtypes.TimesheetStatusType.FINALIZED,
+  ]),
+});
+export type StatusChangeRequest = z.infer<typeof StatusChangeRequest>;
 
 /* The main request body that is used to determine what we should be updating in a request 
     @TimesheetID: The id of the timesheet we are updating 
@@ -104,15 +117,14 @@ export type StatusChangeRequest = z.infer<typeof StatusChangeRequest>
     @Payload: The contents to be used in the operation for updating this. 
 */
 export const TimesheetUpdateRequest = z.object({
-    TimesheetID: z.number(), 
-    Operation: z.enum([
-        TimesheetOperations.INSERT,
-        TimesheetOperations.UPDATE,
-        TimesheetOperations.DELETE,
-        TimesheetOperations.STATUS_CHANGE, 
-        TimesheetOperations.CREATE_TIMESHEET
-        ]), 
-    Payload: z.any(), 
-})
-export type TimesheetUpdateRequest = z.infer<typeof TimesheetUpdateRequest>
-
+  TimesheetID: z.number(),
+  Operation: z.enum([
+    TimesheetOperations.INSERT,
+    TimesheetOperations.UPDATE,
+    TimesheetOperations.DELETE,
+    TimesheetOperations.STATUS_CHANGE,
+    TimesheetOperations.CREATE_TIMESHEET,
+  ]),
+  Payload: z.any(),
+});
+export type TimesheetUpdateRequest = z.infer<typeof TimesheetUpdateRequest>;
