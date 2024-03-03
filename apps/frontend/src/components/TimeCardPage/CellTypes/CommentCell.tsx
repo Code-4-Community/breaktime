@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Stack } from "@chakra-ui/react";
 
 import { UserContext } from "../UserContext";
-import { CommentSchema, ReportSchema } from "../../../schemas/RowSchema";
+import { CommentSchema, ReportSchema, RowSchema } from "../../../schemas/RowSchema";
 import { CommentType } from "../types";
 import { getAllActiveCommentsOfType } from "../utils";
 
@@ -10,15 +10,19 @@ import ShowCommentModal from "./CommentModals/ShowCommentModal";
 import ShowReportModal from "./CommentModals/ShowReportModal";
 
 interface CommentProps {
+  updateField: Function
   comments: CommentSchema[] | undefined;
   date: number;
   timesheetID: number;
+  row: RowSchema;
 }
 
 export function CommentCell({
+  updateField,
   comments,
   date,
-  timesheetID
+  timesheetID,
+  row
 }: CommentProps) {
   const [currentComments, setCurrentComments] = useState(
     getAllActiveCommentsOfType(CommentType.Comment, comments)
@@ -43,6 +47,8 @@ export function CommentCell({
         comments={currentComments}
         isEditable={isEditable}
         timesheetID={timesheetID}
+        row={row}
+        updateField={updateField}
       />
       <ShowReportModal
         date={date}

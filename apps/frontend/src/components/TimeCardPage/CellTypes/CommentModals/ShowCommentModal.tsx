@@ -36,13 +36,15 @@ import {
   DeleteIcon
 } from "@chakra-ui/icons";
 
-import { CommentSchema } from "../../../../schemas/RowSchema";
+import { CommentSchema, RowSchema } from "../../../../schemas/RowSchema";
 import { CommentType, CellStatus, Color } from "../../types";
 import { getAllActiveCommentsOfType, createNewComment } from "../../utils";
 import apiClient from "src/components/Auth/apiClient";
 import { createToast } from "../../utils";
 
 const saveEditedComment = (
+  updateField: Function,
+  row: RowSchema,
   setComments: Function, 
   comments: CommentSchema[], 
   typeOfComment: CommentType, 
@@ -51,10 +53,22 @@ const saveEditedComment = (
   // previous comment edited over so set it to deleted
   prevComment.State = CellStatus.Deleted
   setComments(getAllActiveCommentsOfType(typeOfComment, [...comments, newComment]));
-  // TODO: save to DB
+  
+  var rowToMutate = row.Comment; 
+  if (rowToMutate === undefined) {
+      rowToMutate = comments;
+  }
+  // Value is null, so mark it as undefined in our processing 
+  rowToMutate = setComments([...comments, newComment]);
+  console.log(rowToMutate)
+  
+  //Triggering parent class to update its references here as well 
+  updateField("Comment", rowToMutate); 
 };
 
 const deleteComment = (
+  updateField: Function,
+  row: RowSchema,
   onCloseDisplay: Function, 
   setComments: Function, 
   comments: CommentSchema[], 
@@ -66,21 +80,34 @@ const deleteComment = (
   if (comments.length === 1) {
     onCloseDisplay()
   }
-  // TODO: save to DB
+  var rowToMutate = row.Comment; 
+  if (rowToMutate === undefined) {
+      rowToMutate = comments;
+  }
+  // Value is null, so mark it as undefined in our processing 
+  rowToMutate = setComments([...comments, comment]);
+  console.log(rowToMutate)
+  
+  //Triggering parent class to update its references here as well 
+  updateField("Comment", rowToMutate); 
 }
 
 interface ShowCommentModalProps {
     comments: CommentSchema[];
     setComments: Function;
+    updateField: Function,
     isEditable: boolean;
     timesheetID: number;
+    row: RowSchema;
   }
   
 export default function ShowCommentModal({
+    updateField,
     comments,
     setComments,
     isEditable,
-    timesheetID
+    timesheetID,
+    row
   }: ShowCommentModalProps) {
     const { isOpen: isOpenDisplay, onOpen: onOpenDisplay, onClose: onCloseDisplay } = useDisclosure();
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onClose: onCloseAdd } = useDisclosure();
@@ -138,7 +165,7 @@ export default function ShowCommentModal({
                     <Editable
                       isDisabled={!isEditable}
                       defaultValue={comment.Content}
-                      onSubmit={(value) => saveEditedComment(setComments, comments, CommentType.Comment, comment, createNewComment(user, CommentType.Comment, value))}
+                      onSubmit={(value) => saveEditedComment(updateField, row, setComments, comments, CommentType.Comment, comment, createNewComment(user, CommentType.Comment, value))}
                     >
                       <EditablePreview />
   
@@ -147,7 +174,7 @@ export default function ShowCommentModal({
                           <Input as={EditableInput} />
                           <HStack>
                             <EditableControls />
-                            <IconButton aria-label="Delete" icon={<DeleteIcon />} onClick={() => deleteComment(onCloseDisplay, setComments, comments, CommentType.Comment, comment)} />
+                            <IconButton aria-label="Delete" icon={<DeleteIcon />} onClick={() => deleteComment(updateField, row, onCloseDisplay, setComments, comments, CommentType.Comment, comment)} />
                           </HStack>
                         </>
                       )}
@@ -174,8 +201,18 @@ export default function ShowCommentModal({
       };
   
       const handleSubmit = () => {
-        // TODO: reuse comment validation
-        setComments([...comments, createNewComment(user, CommentType.Comment, remark)]);
+        
+        var rowToMutate = row.Comment; 
+        if (rowToMutate === undefined) {
+            rowToMutate = comments;
+        }
+        // Value is null, so mark it as undefined in our processing 
+        rowToMutate = setComments([...comments, createNewComment(user, CommentType.Comment, remark)]);
+        console.log(rowToMutate)
+        
+        //Triggering parent class to update its references here as well 
+        updateField("Comment", rowToMutate); 
+        
         apiClient.saveComment(remark, timesheetID).then((resp) =>
           {if (resp) { 
             toast(createToast({position: 'bottom-right',title:'success.', description: "Your report has been saved.", status: "success"}))

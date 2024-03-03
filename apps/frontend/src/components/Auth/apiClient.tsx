@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions } from "../TimeCardPage/types";
+import { ThemeProvider } from "react-bootstrap";
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -110,19 +111,22 @@ export class ApiClient {
       },
     ];
   }
-  // export const NoteSchema = z.object({
-  //   Type: z.enum(["Comment", "Report"]),
-  //   EntryID: z.string(), 
-  //   AuthorUUID: z.string(),
-  //   DateTime: z.number(),
-  //   Content: z.string(),
-  //   State: z.enum(["Active", "Deleted"]),
-  // })
   //TODO: hook up to backend
   public async saveComment(comment: string, timesheetID: number): Promise<Boolean> {
-    // return this.post("/auth/timesheet", {
-    //   timesheet: updatedEntry,
-    // }) as Promise<Boolean>;
+    // export const TimesheetUpdateRequest = z.object({
+    //   TimesheetID: z.number(), 
+    //   Operation: z.enum([
+    //       TimesheetOperations.INSERT,
+    //       TimesheetOperations.UPDATE,
+    //       TimesheetOperations.DELETE,
+    //       TimesheetOperations.STATUS_CHANGE, 
+    //       TimesheetOperations.CREATE_TIMESHEET
+    //       ]),  
+    //   Payload: z.any()
+      // gab current timesheetID
+      // update comment/report in ThemeProviderpass entire timesheet into save report/comment
+  // })
+  
     return true;
   }
 
