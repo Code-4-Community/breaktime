@@ -4,12 +4,28 @@ import { EditIcon } from "@chakra-ui/icons";
 import { EvaluationModal } from "./EvaluationModal";
 import { CommentSchema } from "src/schemas/RowSchema";
 
+/** Displays the comments in a list
+ * each comment is a button that directs back to the modal
+ *
+ * @param commentList - list of comments
+ * @param openEvaluationForm - is the modal open?
+ * @param updateCommentList - update the list of comments
+ */
 export function Evaluations({
   commentList,
   openEvaluationForm,
   updateCommentList,
+}: // handleModalOpen,
+// handleModalClose,
+{
+  commentList: CommentSchema[];
+  openEvaluationForm: boolean;
+  updateCommentList: (updatedList: CommentSchema[]) => void;
+  // handleModalOpen;
+  // handleModalClose;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // the comment to be edited
   const [commentToEdit, setCommentToEdit] = useState<CommentSchema | null>(
     null
   );
@@ -29,6 +45,9 @@ export function Evaluations({
     updateCommentList(updatedComments);
   };
 
+  // TO DO: saveTimesheet function?
+  // updates the list view of the comments
+  // also updates an existinf comment when submitted
   const handleCommentSubmit = (comment: CommentSchema) => {
     if (commentToEdit) {
       const index = commentList.findIndex((c) => c === commentToEdit);

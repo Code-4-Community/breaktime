@@ -359,14 +359,17 @@ export default function Page() {
     setComments(newCommentList);
   };
 
+  // set the modal as open
   const openEvaluationForm = () => {
     setIsOpenCommentForm(true);
   };
 
+  // set the modal as closed
   const closeEvaluationForm = () => {
     setIsOpenCommentForm(false);
   };
 
+  // set the comment list based on a given comment and close the form
   const handleCommentSubmit = (comment: Comment) => {
     setComments([...comments, comment]);
     closeEvaluationForm();
@@ -401,7 +404,7 @@ export default function Page() {
               </IconButton>
               {isOpenCommentForm && (
                 <EvaluationModal
-                  isOpen={true}
+                  isOpen={isOpenCommentForm}
                   onClose={closeEvaluationForm}
                   onCommentSubmit={handleCommentSubmit}
                   onCommentDelete={null}
@@ -460,6 +463,8 @@ export default function Page() {
               commentList={comments}
               openEvaluationForm={isOpenCommentForm}
               updateCommentList={updateCommentList}
+              // handleModalOpen={openEvaluationForm}
+              // handleModalClose={closeEvaluationForm}
               //handleCommentSubmit={handleCommentSubmit}
             />
           }

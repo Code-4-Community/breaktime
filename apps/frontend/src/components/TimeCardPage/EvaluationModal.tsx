@@ -13,12 +13,22 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { CommentSchema } from "src/schemas/RowSchema";
 import { createNewComment } from "./utils";
 import { UserSchema } from "../../schemas/UserSchema";
 import { CommentType } from "./types";
+import { UserContext } from "./UserContext";
 
+/** Displays a modal with options for weekly evaluations
+ * The modal has 5 options, including the ablity to write text
+ *
+ * @param {boolean} isOpen - is the modal open
+ * @param onClose  A callback function invoked when the modal is closed.
+ * @param onCommentSubmit -  A callback function invoked when the submit is pressed.
+ * @param onCommentDelete -  A callback function invoked when the delete is pressed.
+ * @param {string} commentToEdit  -  The comment that needs to be edited
+ */
 export function EvaluationModal({
   isOpen,
   onClose,
@@ -32,15 +42,18 @@ export function EvaluationModal({
   onCommentDelete: (comment: CommentSchema) => void;
   commentToEdit: CommentSchema | null;
 }) {
-  const [editedComment, setEditedComment] = useState<string>(
-    commentToEdit ? commentToEdit.Content : ""
-  );
-  const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
+  const user = useContext(UserContext);
+  const [isOpenCommentForm, setIsOpenCommentForm] = useState(isOpen);
   const [selectedOption, setSelectedOption] = useState("");
-  const [otherText, setOtherText] = useState("");
+  // text inputed by user when option 5 is chosen
+  const [customOptionText, setCustomOptionText] = useState("");
+  // TO DO: replace comment list with a save of the timesheet
   const [commentList, setCommentList] = useState<CommentSchema[]>([]);
   const [selectedComment, setSelectedComment] = useState<CommentSchema | null>(
     null
+  );
+  const [editedComment, setEditedComment] = useState<string>(
+    commentToEdit ? commentToEdit.Content : ""
   );
 
   interface WeeklyEvaluationModalProps {
@@ -48,7 +61,7 @@ export function EvaluationModal({
     weeklyEvaluation: CommentSchema[];
   }
 
-  // set value for existing comment
+  // set value for an existing comment
   useEffect(() => {
     if (commentToEdit) {
       setEditedComment(commentToEdit.Content);
@@ -57,6 +70,7 @@ export function EvaluationModal({
     }
   }, [commentToEdit]);
 
+  // different evaluation options
   const options = [
     {
       value: "option1",
@@ -68,16 +82,17 @@ export function EvaluationModal({
       content: "Lack of professionalism and/or poor behavior",
     },
     { value: "option4", content: "N/A" },
-    { value: "option5", content: otherText },
+    { value: "option5", content: customOptionText },
   ];
 
-  const [user, setUser] = useState<UserSchema>();
-
+  // sets form as closed
   const closeCommentForm = () => {
     setIsOpenCommentForm(false);
     onClose();
   };
 
+  // sets the selected option
+  // sets the edited comment as the selected option
   const handleOptionChange = (value: string) => {
     if (commentToEdit) {
       const selectedOptionContent = options.find(
@@ -90,15 +105,17 @@ export function EvaluationModal({
     }
   };
 
+  // sets the inputed text as the selected option (if 'other' was chosen)
   const handleInputOption = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     if (commentToEdit) {
       setEditedComment(newValue);
     } else {
-      setOtherText(event.target.value);
+      setCustomOptionText(event.target.value);
     }
   };
 
+  // creates a new comment for the selected option or edits the existing comment
   const handleSubmit = () => {
     if (commentToEdit) {
       const updatedComment = { ...commentToEdit, Content: editedComment };
@@ -107,13 +124,12 @@ export function EvaluationModal({
     } else {
       let newCommentContent = selectedOption;
       if (selectedOption === "option5") {
-        newCommentContent = otherText;
+        newCommentContent = customOptionText;
       } else {
         newCommentContent = options.find(
           (opt) => opt.value === selectedOption
         )?.content;
       }
-
       const newComment = createNewComment(
         user,
         CommentType.Comment,
@@ -123,6 +139,7 @@ export function EvaluationModal({
     }
   };
 
+  // removes the "current comment" from the comment list
   const handleDelete = () => {
     if (commentToEdit) {
       const updatedComments = commentList.filter(
@@ -147,21 +164,16 @@ export function EvaluationModal({
             </FormLabel>
             <RadioGroup onChange={handleOptionChange} value={selectedOption}>
               <Stack spacing={2}>
-                <Radio value="option1">
-                  This associate was a total rock star this week!
-                </Radio>
-                <Radio value="option2">
-                  This associate did just okay this week{" "}
-                </Radio>
-                <Radio value="option3">
-                  Lack of professionalism and/or poor behavior{" "}
-                </Radio>
-                <Radio value="option4">N/A</Radio>
-                <Radio value="option5">Other</Radio>
+                {options.map((option) => (
+                  <Radio key={option.value} value={option.value}>
+                    {option.content}
+                  </Radio>
+                ))}
+
                 {selectedOption === "option5" && (
                   <Input
                     placeholder="Enter answer"
-                    value={commentToEdit ? editedComment : otherText}
+                    value={commentToEdit ? editedComment : customOptionText}
                     onChange={handleInputOption}
                   />
                 )}
