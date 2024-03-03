@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/schemas": ["libs/shared/schemas/src/index.ts"]
+      "@org/schemas": ["libs/shared/schemas/src/index.ts"],
+      "@org/timesheet-schemas": ["libs/shared/timesheet-schemas/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

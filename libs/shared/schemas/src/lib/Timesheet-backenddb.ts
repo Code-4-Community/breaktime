@@ -1,4 +1,15 @@
 import { z } from "zod";
+import { CellType } from "./CellTypes";
+
+/*
+-------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
+---------------------------------DELETE WHEN MONOREPO CREATED------------------------------------------------------
+                            SEE BACKEND DIRECTORY FOR ALL DOCUMENTATION / COMMENTS 
+-------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
+*/
+
 /**
  * Represents the database schema for a note. This can be one of the following types:
  * -- Comment: a general comment made for an entry or whole timesheet.
@@ -21,7 +32,7 @@ export const ScheduleEntrySchema = z.object({
   Date: z.number(), 
   StartDateTime: z.number().optional(),
   EndDateTime: z.number().optional(),
-  AuthorUUID: z.string() 
+  AuthorUUID: z.string()
 })
 
 /**
@@ -29,27 +40,16 @@ export const ScheduleEntrySchema = z.object({
  */
 export const TimeEntrySchema = z.object({
   StartDateTime: z.number().optional(),
-  EndDateTime: z.number().optional(),
+  EndDateTime: z.number().optional(), 
   AuthorUUID: z.string(),
 })
 
-
-/* 
-  Supported type of cells for each row in a timesheet 
-    @REGULAR - a regular cell
-    @PTO - Cell signifying paid time off (PTO) 
-*/
-export enum CellType {
-  REGULAR_LEGACY = "Regular", // No longer using this format for data, but some older timesheet entries may have the 'legacy' type
-  REGULAR = "Time Worked",
-  PTO = "PTO"
-}
 
 /**
  * Represents the database schema for a single shift or entry in the weekly timesheet. 
  */
 export const TimesheetEntrySchema = z.object({
-  Type: z.enum([CellType.REGULAR, CellType.REGULAR_LEGACY, CellType.PTO]).transform((cellType) => cellType === CellType.REGULAR_LEGACY ? CellType.REGULAR : cellType),
+  Type: z.enum([CellType.REGULAR, CellType.PTO]),
   EntryID: z.string(), 
   Date: z.number(), 
   AssociateTimes: TimeEntrySchema.optional(),
@@ -72,10 +72,9 @@ export const StatusEntryType = z.union(
 export const TimesheetStatus = z.object({
   HoursSubmitted: StatusEntryType, 
   HoursReviewed: StatusEntryType,
+  ScheduleSubmitted: StatusEntryType, 
   Finalized: StatusEntryType 
 });
-
-
 
 /**
  * Represents the database schema for a weekly timesheet

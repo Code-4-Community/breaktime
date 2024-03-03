@@ -1,5 +1,5 @@
 
-import { TimeSheetSchema, TimesheetStatus, TimesheetEntrySchema, CellType, TimeEntrySchema } from "../src/db/schemas/Timesheet"
+import { DynamoTimesheetSchema, DynamoStatusSchema, DynamoShiftSchema, DynamoCellType, DynamoTimeEntrySchema } from "../src/db/schemas/DynamoTimesheet"
 import { v4 as uuidv4 } from 'uuid';
 import { WriteEntryToTable } from "../src/dynamodb";
 //No idea why this require statement is needed but moment breaks otherwise :( 
@@ -49,9 +49,9 @@ const timesheetToUpload = TimeSheetSchema.parse({
     }), 
     CompanyID: "Example Company 401", 
     HoursData: [
-        createEntry(CellType.REGULAR, daysOfWeek.day(1).unix(), undefined, undefined), 
-        createEntry(CellType.PTO, daysOfWeek.day(2).unix(), undefined, undefined), 
-        createEntry(CellType.REGULAR, daysOfWeek.day(5).unix(), createTimeEntry(100, 500), undefined)
+        createEntry(DynamoCellType.REGULAR, daysOfWeek.day(1).unix(), undefined, undefined), 
+        createEntry(DynamoCellType.PTO, daysOfWeek.day(2).unix(), undefined, undefined), 
+        createEntry(DynamoCellType.REGULAR, daysOfWeek.day(5).unix(), createTimeEntry(100, 500), undefined)
     ],  
     ScheduleData: [], 
     WeekNotes: []

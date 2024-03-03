@@ -11,7 +11,13 @@ export enum CellStatus {
 export enum CommentType { 
     Comment = "Comment", 
     Report = "Report", 
-}; 
+};
+
+export enum ReportOptions {
+    Late = "Late Arrival",
+    LeftEarly = "Early Departure",
+    Absent = "No Show"
+}
 
 export const enum Review_Stages {
     UNSUBMITTED = "Not-Submitted",

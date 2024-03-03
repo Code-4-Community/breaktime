@@ -1,4 +1,4 @@
-import { DBToFrontend } from "./FrontendConversions";
+import { DBToModel } from "./FrontendConversions";
 import { FrontendTimeSheetSchema } from "../frontend/TimesheetSchema";
 import { TimesheetUpdateRequest, TimesheetOperations } from "../schemas/UpdateTimesheet";
 
@@ -9,7 +9,10 @@ import { HoursDataOperations, ItemsDelegator } from "./ItemsOperations";
 import {WriteEntryToTable} from "src/dynamodb"
 import {frontendEntryConversions} from './EntryOperations'
 
-export class UploadTimesheet {
+/**
+ * Purpose: Handle Operation Requests
+ */
+export class OperationRequestHandler {
     
     private delegator = new ItemsDelegator() 
 

@@ -9,10 +9,10 @@ import {
 import { AuthService } from "./auth.service";
 import { WriteEntryToTable, UserTimesheets } from "../dynamodb";
 import TokenClient from './cognito/cognito.keyparser'
-import { TimeSheetSchema } from 'src/db/schemas/Timesheet';
-import * as frontendTimesheetSchemas from 'src/db/schemas/Timesheet'
+import { DynamoTimesheetSchema } from 'src/db/schemas/DynamoTimesheet';
+import * as frontendTimesheetSchemas from 'src/db/schemas/DynamoTimesheet'
 import { RolesGuard } from 'src/utils/guards/roles.guard';
-import { UploadTimesheet } from 'src/db/timesheets/UploadTimesheet';
+import { OperationRequestHandler } from 'src/db/timesheets/OperationRequestHandler';
 import { TimesheetUpdateRequest } from 'src/db/schemas/UpdateTimesheet';
 import { Formatter } from 'src/db/timesheets/Formatter';
 
@@ -21,7 +21,7 @@ import { Formatter } from 'src/db/timesheets/Formatter';
 @UseGuards(RolesGuard)
 export class AuthController {
 
-  uploadApi = new UploadTimesheet(); 
+  uploadApi = new OperationRequestHandler(); 
 
   constructor(private authService: AuthService) {}
 
@@ -44,7 +44,7 @@ export class AuthController {
   @Get("timesheet")
   //@Roles('breaktime-management-role')
   
-  public async grab_timesheets(@Headers() headers: any): Promise<frontendTimesheetSchemas.TimeSheetSchema[]> {
+  public async grab_timesheets(@Headers() headers: any): Promise<frontendTimesheetSchemas.DynamoTimesheetSchema[]> {
     const userId = await TokenClient.grabUserID(headers); 
 
     if (userId) {

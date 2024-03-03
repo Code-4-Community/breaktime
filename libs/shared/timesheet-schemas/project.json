@@ -1,0 +1,30 @@
+{
+  "name": "timesheet-schemas",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/timesheet-schemas/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared/timesheet-schemas",
+        "main": "libs/shared/timesheet-schemas/src/index.ts",
+        "tsConfig": "libs/shared/timesheet-schemas/tsconfig.lib.json",
+        "assets": ["libs/shared/timesheet-schemas/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/shared/timesheet-schemas/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

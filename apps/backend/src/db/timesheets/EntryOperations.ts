@@ -1,6 +1,9 @@
-import * as dbTimesheetTypes from '../schemas/Timesheet'
-import * as sharedSchemas from '@org/schemas';
+import * as dbTimesheetTypes from '../schemas/DynamoTimesheet'
+import {UpdateTimesheetRequests, TimesheetSchemas} from '@org/schemas';
 
+
+// TODO : As we are shifting towards a shared schema system, we will move forward with an 'external' schema that handles dynamo data, and an 'internal' schema that works as the shared model of our data between the frontend and backend.
+// Therefore, this file should be deprecated once the shift is complete.
 /*
     Code for converting from the frontend to our backend equivalents. Useful for actually processing this to be stored in our database / align with what our 
     backend expects to see in this data. 
@@ -34,13 +37,13 @@ export class frontendEntryConversions {
     /*
         Delegate that converts the item we are inserting to its database equivalent so that it can actually exist on the table 
     */
-    public static insertConversion(body: sharedSchemas.InsertRequest) : sharedSchemas.InsertRequest {
+    public static insertConversion(body: UpdateTimesheetRequests.InsertRequest) : UpdateTimesheetRequests.InsertRequest {
         
         switch (body.Type) {
-            case sharedSchemas.TimesheetListItems.TABLEDATA:
+            case TimesheetSchemas.TimesheetListItems.TABLEDATA:
                 return {
                     ...body, 
-                    Item: this.toDBRow(sharedSchemas.TimesheetEntrySchema.parse(body.Item))
+                    Item: this.toDBRow(TimesheetSchemas.TimesheetEntrySchema.parse(body.Item))
                 
                 }
             case sharedSchemas.TimesheetListItems.SCHEDULEDATA:
@@ -80,8 +83,8 @@ export class frontendEntryConversions {
     /*
         Converts a row in our timesheet to our database equivalent from frontend. 
     */
-    private static toDBRow(row: frontendRowTypes.RowSchema): dbTimesheetTypes.TimesheetEntrySchema { 
-        return dbTimesheetTypes.TimesheetEntrySchema.parse({
+    private static toDBRow(row: frontendRowTypes.RowSchema): dbTimesheetTypes.DynamoShiftSchema { 
+        return dbTimesheetTypes.ShiftSchema.parse({
             Type: this.toDBType(row.Type), 
             EntryID: row.UUID, 
             Date: row.Date, 
@@ -93,7 +96,7 @@ export class frontendEntryConversions {
     }
 
     // Converts a timesheet entry to our database equivalent from frontend. 
-    private static toDBRowEntry(row: frontendRowTypes.TimeRowEntry | undefined): dbTimesheetTypes.TimeEntrySchema | undefined{
+    private static toDBRowEntry(row: frontendRowTypes.TimeRowEntry | undefined): dbTimesheetTypes.DynamoTimeEntrySchema | undefined{
         if (row !== undefined) {
             return dbTimesheetTypes.TimeEntrySchema.parse({
                 StartDateTime: row.Start, 
@@ -105,19 +108,19 @@ export class frontendEntryConversions {
     }
 
     // Converts a frontend cell type to our database equivalent. 
-    private static toDBType(entryType: sharedSchemas..RowType): dbTimesheetTypes.CellType {
+    private static toDBType(entryType: sharedSchemas..RowType): dbTimesheetTypes.DynamoCellType {
         switch (entryType) {
             case sharedSchemas.CellType.REGULAR:
-                return dbTimesheetTypes.CellType.REGULAR; 
+                return dbTimesheetTypes.DynamoCellType.REGULAR; 
             case frontendTypes.CellType.PTO:
-                return dbTimesheetTypes.CellType.PTO; 
+                return dbTimesheetTypes.DynamoCellType.PTO; 
             default:
                 return undefined 
         }
     }
 
     // Converts from our frontend week comments to our database equivalents. 
-    private static toDBNotes(comments: frontendRowTypes.CommentSchema[] | undefined): dbTimesheetTypes.NoteSchema[] | undefined {
+    private static toDBNotes(comments: frontendRowTypes.CommentSchema[] | undefined): dbTimesheetTypes.DynamoNoteSchema[] | undefined {
         if (comments !== undefined) {
             return comments.map((comment) => frontendEntryConversions.toDBNote(comment))
             
@@ -126,7 +129,7 @@ export class frontendEntryConversions {
     }
 
     // Converts a singular week comment / note from our frontend to database. 
-    private static toDBNote(comment: frontendRowTypes.CommentSchema | undefined): dbTimesheetTypes.NoteSchema | undefined {
+    private static toDBNote(comment: frontendRowTypes.CommentSchema | undefined): dbTimesheetTypes.DynamoNoteSchema | undefined {
         if (comment !== undefined) {
             return dbTimesheetTypes.NoteSchema.parse({
                 Type: comment.Type, 

@@ -21,7 +21,6 @@ export class CognitoWrapper {
     clientId: process.env.AWS_ACCESS_KEY,
   });
 
-  // TODO : uhhhhh does this require no credentials? I think that it may have something to with how we set up credentialproviders, but not sure... Can anyone get our users' attributes if they have our region and user pool id?
   serviceProvider = new CognitoIdentityProviderClient({
     region: process.env.AWS_USER_POOL_REGION,
   });

@@ -1,19 +1,19 @@
-import * as timesheetSchemas from 'src/db/schemas/Timesheet'
+import * as timesheetSchemas from 'src/db/schemas/DynamoTimesheet'
 
 import * as constants from 'src/constants'
 import { v4 as uuidv4 } from 'uuid';
 
 import {UserTimesheets, WriteEntryToTable} from 'src/dynamodb'
-import { DBToFrontend } from './FrontendConversions';
+import { DBToModel } from './FrontendConversions';
 
 const moment = require('moment-timezone'); 
 
 
+/*
+    Processes the timesheets we are grabbing for a user to ensure they are properly prepared 
+    for the user - i.e. any missing days are added, etc. 
+*/
 export class Formatter {
-    /*
-        Processes the timesheets we are grabbing for a user to ensure they are properly prepared 
-        for the user - i.e. any missing days are added, etc. 
-    */
 
     // Fetches timesheets and properly formats them to our frontend data versions. 
     public static async fetchUserTimesheets(userid: string) {
@@ -23,11 +23,11 @@ export class Formatter {
         timesheets = this.format(timesheets); 
         
 
-        return DBToFrontend.convertTimesheets(timesheets); 
+        return DBToModel.convertTimesheets(timesheets); 
     }
 
     // Formats a list of backend / database timesheets to the frontend equivalents.   
-    public static format(timesheets: timesheetSchemas.TimeSheetSchema[]) : timesheetSchemas.TimeSheetSchema[] {
+    public static format(timesheets: timesheetSchemas.DynamoTimesheetSchema[]) : timesheetSchemas.DynamoTimesheetSchema[] {
         const updatedTimesheets =  timesheets.map((timesheet) => {
             const [updatedTimesheet, modified] =  this.validate(timesheet); 
             if (modified) {
@@ -41,12 +41,12 @@ export class Formatter {
     }
 
     // Main method all other future methods delegate to / would return to when we are processing a timesheet to convert to frontend 
-    private static validate(timesheet): [timesheetSchemas.TimeSheetSchema, boolean] {
+    private static validate(timesheet): [timesheetSchemas.DynamoTimesheetSchema, boolean] {
         //When more functions are introduced here, create logic to determine whether any modified it to return 
         return this.ensureAllDays(timesheet); 
     }
 
-    private static ensureAllDays(timesheet:timesheetSchemas.TimeSheetSchema): [timesheetSchemas.TimeSheetSchema, boolean] {
+    private static ensureAllDays(timesheet:timesheetSchemas.DynamoTimesheetSchema): [timesheetSchemas.DynamoTimesheetSchema, boolean] {
         /*
             Ensures that for each day from START_DATE to START_DATE + TIMESHEET_DURATION that each day has at-least one entry 
         */
@@ -74,7 +74,7 @@ export class Formatter {
         }
         //Returns the updated timesheet and whether or not it was modified 
         return [
-            timesheetSchemas.TimeSheetSchema.parse(
+            timesheetSchemas.TimesheetSchema.parse(
             {...timesheet, 
                 HoursData: updatedRows 
             }
@@ -82,9 +82,9 @@ export class Formatter {
 
     }
     //Creates an empty row in the timesheet for a specified date. 
-    private static createEmptyRow(date: number): timesheetSchemas.TimesheetEntrySchema {
-        return timesheetSchemas.TimesheetEntrySchema.parse({
-            Type: timesheetSchemas.CellType.REGULAR, 
+    private static createEmptyRow(date: number): timesheetSchemas.DynamoShiftSchema {
+        return timesheetSchemas.ShiftSchema.parse({
+            Type: timesheetSchemas.DynamoCellType.REGULAR, 
             EntryID: uuidv4(), 
             Date: date, 
             AssociateTimes: undefined, 
