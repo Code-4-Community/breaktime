@@ -169,7 +169,7 @@ export async function WriteEntryToTable(
 // Default EndDate should be start date plus one week
 export async function getTimesheetsForUsersInGivenTimeFrame(
   uuids: string[],
-  StartDate: number = moment().startOf("week").subtract(3, "week").unix(),
+  StartDate: number = moment().startOf("week").subtract(2, "week").unix(),
   EndDate: number = moment().endOf("week").unix()
 ): Promise<any> {
   if (StartDate > EndDate) {
@@ -209,7 +209,6 @@ export async function getTimesheetsForUsersInGivenTimeFrame(
 
     const uuidSet = new Set(uuids);
 
-    console.log("BEFore date change");
     console.log("start date ", StartDate);
     console.log("end date ", EndDate);
     // TODO: have to check here the timesheets for all weeks exist then and create empty if not
@@ -229,7 +228,6 @@ export async function getTimesheetsForUsersInGivenTimeFrame(
 
     // adds all of the existing timesheets into a list
     for (const sheet of modifiedTimesheetData) {
-      console.log("Sheet in loop ", sheet);
       // maybe move to utils and can in theory have locale based issues so configure moment project wide
       const beginningOfWeekDate = moment
         .unix(sheet.StartDate)
@@ -240,15 +238,14 @@ export async function getTimesheetsForUsersInGivenTimeFrame(
         .startOf("week")
         .unix();
 
-      console.log("Adding this week, ", beginningOfWeekDate);
       existingWeeks.add(beginningOfWeekDate); // make it sunday 00:00:00
     }
 
     console.log("list of existing weeks ", existingWeeks.size);
     let userCompanies = await GetCompaniesForUser(uuid);
 
-    console.log("BEFORE ");
     console.log(existingWeeks, StartDate);
+
     for (
       const m = moment.unix(StartDate);
       m.isBefore(moment.unix(EndDate));
@@ -262,16 +259,15 @@ export async function getTimesheetsForUsersInGivenTimeFrame(
         .set("millisecond", 0)
         .startOf("week")
         .unix();
-      if (!(beginningOfWeekDate in existingWeeks)) {
-        console.log(
-          "Week not found in existingWeeks. Creating timesheetsn for",
-          beginningOfWeekDate
-        );
+      if (!existingWeeks.has(beginningOfWeekDate)) {
         for (const company in userCompanies) {
-          const newSheet = timesheetToUpload(uuid, company); // TODO: should loop through companies user was active in and do it like that
+          const newSheet = timesheetToUpload(
+            uuid,
+            company,
+            beginningOfWeekDate
+          );
           WriteEntryToTable(newSheet);
           // add to modifiedTimesheetData
-          console.timeLog("writing to table 1");
           modifiedTimesheetData.push(newSheet);
         }
         existingWeeks.add(beginningOfWeekDate);
@@ -287,7 +283,6 @@ export async function getTimesheetsForUsersInGivenTimeFrame(
     // modifiedTimesheetData not sorted by date but can be sorted
 
     const uuidToTimesheet = { uuid: uuid, timesheet: modifiedTimesheetData };
-    console.log("writing to table 2 ");
     result.push(uuidToTimesheet);
   }
 

@@ -77,17 +77,13 @@ export class AuthController {
     // if associate only return their timesheet
 
     const userID = await TokenClient.grabUserID(headers);
-    console.log("UserID in getTimesheet:", userIDs);
-    console.log("userId from header ", userID);
+    console.log("Getting timesheets for :", userIDs);
     let areAllUUIDsValid;
     if (!userIDs) {
       const userID = await TokenClient.grabUserID(headers);
-      console.log("inside !userID");
       if (1 == 1) {
         // associate
-        console.log("1 was chosen - associate");
         userIDs = [userID];
-        console.log("just set the user id  ", userIDs);
       } else if (2 === 2) {
         // supervisor
         userIDs = []; // get all users in their companies
@@ -96,19 +92,13 @@ export class AuthController {
         userIDs = []; // get all users they own
       } else {
         // no role no access
-        // throw error]
-        console.log("in the else");
+        // throw error
         throw new NotFoundException("UserID is required");
       }
     }
 
     if (1 === 1) {
       // associate
-      console.log("is an associate");
-      console.log("first one ", userIDs);
-      console.log("length ", userIDs.length);
-      console.log("userID ", userID);
-
       //areAllUUIDsValid = (userIDs.length === 1 &&  userID === userIDs[0])
       areAllUUIDsValid = userIDs;
     } else if (2 === 2) {
@@ -123,19 +113,15 @@ export class AuthController {
       //admin
       areAllUUIDsValid = await areUUIDsValid(userIDs);
     } else {
-      console.log("no userid");
-      throw new NotFoundException("UserID is required 2");
+      throw new NotFoundException("UserID is required");
       // no role no access
       // throw error
     }
 
     if (areAllUUIDsValid) {
-      console.log("getting timesheets timeframe");
-
       //return await getTimesheetsForUsersInGivenTimeFrame(userIDs, 	1707799467, 1708231467 );
       return await getTimesheetsForUsersInGivenTimeFrame(userIDs);
     } else {
-      console.log("in the else 2");
       throw new NotFoundException("invalid uuids");
       // throw error
     }
