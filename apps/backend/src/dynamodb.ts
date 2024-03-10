@@ -8,8 +8,8 @@ import {
 import { unmarshall, marshall } from "@aws-sdk/util-dynamodb";
 import * as dotenv from "dotenv";
 
-import {DynamoTimesheetSchema} from './db/schemas/DynamoTimesheet'
-import { CompanySchema, UserCompaniesSchema } from './db/schemas/CompanyUsers';
+import {DynamoTimesheetSchema} from './db/dynamoSchemas/DynamoTimesheet'
+import { CompanySchema, UserCompaniesSchema } from './db/dynamoSchemas/CompanyUsers';
 
 dotenv.config();
 

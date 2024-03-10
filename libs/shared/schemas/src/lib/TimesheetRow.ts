@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { CellStatus, CellType, CommentType } from "./CellTypes";
+import { CellStatus, CellType, CommentType, ReportOptions } from "./CellTypes";
+import { StatusType } from "./StatusSchema";
 
 /**
  * A collection of various schemas used in creating a shift entry in the timesheet. These schemas are internal models,
@@ -9,10 +10,15 @@ import { CellStatus, CellType, CommentType } from "./CellTypes";
 const optionalNumber = z.union([z.undefined(), z.number()]);
 const optionalString = z.union([z.undefined(), z.string()]);
 
-export const TimeRowEntry = z.union([z.undefined(), z.object({
-    Start: optionalNumber, End: optionalNumber, AuthorID: optionalString
+/**
+ * Represents the schema for an epoch clockin/clockout pair
+ */
+export const TimeEntrySchema = z.union([z.undefined(), z.object({
+    StartDateTime: optionalNumber, 
+    EndDateTime: optionalNumber, 
+    AuthorID: optionalString
 })]); 
-export type TimeRowEntry = z.infer<typeof TimeRowEntry>
+export type TimeEntrySchema = z.infer<typeof TimeEntrySchema>
 
 export const CommentSchema = z.object({
   UUID: z.string(), 
@@ -38,13 +44,35 @@ export const ReportSchema = z.object({
 
 export type ReportSchema = z.infer<typeof ReportSchema>
 
-export const RowSchema = z.object({
+/**
+ * The schema for a shift entry (visually, a row in the timesheet).
+ *  @Type: What type of entry the shift is (PTO, Regular, etc.)
+ *  @EntryId: The unique ID for this shift
+ *  @Date: The epoch value for the date of this shift. Note that this is different than the timestamp of the clock in and clock out.
+ *  @AssociateTimeEntry: The clock-in/clock-out times recorded by the associate
+ *  @SupervisorTimeEntry: The clock-in/clock-out times recorded by the supervisor
+ *  @AdminTimeEntry: The clock-in/clock-out times recorded by the admin
+ *  @Notes: The list of comments and reports saved for this shift.
+ */
+export const ShiftSchema = z.object({
   Type: z.nativeEnum(CellType), 
-  UUID: z.string(), 
+  EntryId: z.string(), 
   Date: z.number(), 
-  Associate: TimeRowEntry, 
-  Supervisor: TimeRowEntry, 
-  Admin: TimeRowEntry, 
-  Comment: z.union([z.undefined(), z.array(CommentSchema || ReportSchema)])
+  AssociateTimeEntry: TimeEntrySchema, 
+  SupervisorTimeEntry: TimeEntrySchema, 
+  AdminTimeEntry: TimeEntrySchema, 
+  Notes: z.array(CommentSchema || ReportSchema).default([]), // TODO : This will likely need to be two separate lists.
 }); 
-export type RowSchema = z.infer<typeof RowSchema>
+export type ShiftSchema = z.infer<typeof ShiftSchema>
+
+export const TimeSheetSchema = z.object({
+  TimesheetID: z.number(),
+  UserID: z.string(),
+  StartDate: z.number(),
+  Status: StatusType,
+  CompanyID: z.string(),
+  TableData: z.array(ShiftSchema),
+  WeekNotes: z.union([z.undefined(), z.array(CommentSchema)]),
+});
+
+export type TimeSheetSchema = z.infer<typeof TimeSheetSchema>;

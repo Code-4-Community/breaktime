@@ -1,6 +1,6 @@
 import { DBToModel } from "./FrontendConversions";
 import { FrontendTimeSheetSchema } from "../frontend/TimesheetSchema";
-import { TimesheetUpdateRequest, TimesheetOperations } from "../schemas/UpdateTimesheet";
+import { TimesheetUpdateRequest, TimesheetOperations } from "../dynamoSchemas/UpdateTimesheet";
 
 import {UserTimesheets} from "src/dynamodb"
 import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";

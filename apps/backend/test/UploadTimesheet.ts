@@ -1,5 +1,5 @@
 
-import { DynamoTimesheetSchema, DynamoStatusSchema, DynamoShiftSchema, DynamoCellType, DynamoTimeEntrySchema } from "../src/db/schemas/DynamoTimesheet"
+import { DynamoTimesheetSchema, DynamoStatusSchema, DynamoShiftSchema, DynamoCellType, DynamoTimeEntrySchema } from "../src/db/dynamoSchemas/DynamoTimesheet"
 import { v4 as uuidv4 } from 'uuid';
 import { WriteEntryToTable } from "../src/dynamodb";
 //No idea why this require statement is needed but moment breaks otherwise :( 

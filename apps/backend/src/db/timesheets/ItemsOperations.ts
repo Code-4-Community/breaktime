@@ -1,5 +1,5 @@
-import {DynamoTimesheetSchema, DynamoShiftSchema, ScheduleEntrySchema, DynamoNoteSchema, StatusEntryType} from '../schemas/DynamoTimesheet'
-import {UpdateRequest, InsertRequest, DeleteRequest, TimesheetListItems, StatusChangeRequest} from '../schemas/UpdateTimesheet'
+import {DynamoTimesheetSchema, DynamoShiftSchema, ScheduleEntrySchema, DynamoNoteSchema, StatusEntryType} from '../dynamoSchemas/DynamoTimesheet'
+import {UpdateRequest, InsertRequest, DeleteRequest, TimesheetListItems, StatusChangeRequest} from '../dynamoSchemas/UpdateTimesheet'
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 //Not sure why but only works if imported like this :| 
 const moment = require('moment-timezone'); 

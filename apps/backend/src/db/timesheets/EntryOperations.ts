@@ -1,5 +1,5 @@
-import * as dbTimesheetTypes from '../schemas/DynamoTimesheet'
-import {UpdateTimesheetRequests, TimesheetSchemas} from '@org/schemas';
+import * as DynamoSchemas from '../dynamoSchemas/DynamoTimesheet'
+import {TimesheetSchemas, Types} from '@org/schemas';
 
 
 // TODO : As we are shifting towards a shared schema system, we will move forward with an 'external' schema that handles dynamo data, and an 'internal' schema that works as the shared model of our data between the frontend and backend.
@@ -24,83 +24,27 @@ class KeyPairMappings  {
 }
 
 export class frontendEntryConversions {
-    //NOTE: The key in the dictionary must match frontend key name as this is how we automatically convert keys  
-    private static hoursDataMappings = {
-        Type: new KeyPairMappings("Type", "Type", frontendEntryConversions.toDBType), 
-        Associate: new KeyPairMappings("Associate", "AssociateTimes", frontendEntryConversions.toDBRowEntry),
-        Supervisor: new KeyPairMappings("Supervisor", "SupervisorTimes", frontendEntryConversions.toDBRowEntry), 
-        Admin: new KeyPairMappings("Admin", "AdminTimes", frontendEntryConversions.toDBRowEntry),
-        Comment: new KeyPairMappings("Comment", "Note", frontendEntryConversions.toDBNotes)
-    } 
-  
-
     /*
-        Delegate that converts the item we are inserting to its database equivalent so that it can actually exist on the table 
+        Converts a shift in our timesheet to our database equivalent from frontend. 
     */
-    public static insertConversion(body: UpdateTimesheetRequests.InsertRequest) : UpdateTimesheetRequests.InsertRequest {
-        
-        switch (body.Type) {
-            case TimesheetSchemas.TimesheetListItems.TABLEDATA:
-                return {
-                    ...body, 
-                    Item: this.toDBRow(TimesheetSchemas.TimesheetEntrySchema.parse(body.Item))
-                
-                }
-            case sharedSchemas.TimesheetListItems.SCHEDULEDATA:
-                throw new Error("Not yet implemented")
-
-            case sharedSchemas.TimesheetListItems.WEEKNOTES:
-                throw new Error("Not yet implemented")
-
-            default:
-                throw new Error("Invalid conversion type provided"); 
-        }
-    }
-
-     /*
-        Delegate that converts the item we are updating to its database equivalent so that it can actually exist on the table 
-    */
-    public static updateConversion(body: sharedSchemas.UpdateRequest) : sharedSchemas.UpdateRequest {
-        switch (body.Type) {
-            case sharedSchemas.TimesheetListItems.TABLEDATA:
-
-                const convertedKey = this.hoursDataMappings[body.Attribute].finalKey; 
-                const convertedValue = this.hoursDataMappings[body.Attribute].conversionFn(body.Data) 
-                return {
-                    ...body, 
-                    Attribute: convertedKey, 
-                    Data: convertedValue
-                }
-            case sharedSchemas.TimesheetListItems.SCHEDULEDATA:
-                throw new Error("Not yet implemented")
-            case sharedSchemas.TimesheetListItems.WEEKNOTES:
-                throw new Error("Not yet implemented")
-            default:
-                throw new Error("Invalid conversion type provided"); 
-        }
-    } 
-    
-    /*
-        Converts a row in our timesheet to our database equivalent from frontend. 
-    */
-    private static toDBRow(row: frontendRowTypes.RowSchema): dbTimesheetTypes.DynamoShiftSchema { 
-        return dbTimesheetTypes.ShiftSchema.parse({
+    private static toDBShift(row: TimesheetSchemas.ShiftSchema): DynamoSchemas.DynamoShiftSchema { 
+        return DynamoSchemas.ShiftSchema.parse({
             Type: this.toDBType(row.Type), 
-            EntryID: row.UUID, 
+            EntryID: row.EntryId, 
             Date: row.Date, 
-            AssociateTimes: this.toDBRowEntry(row.Associate), 
-            SupervisorTimes: this.toDBRowEntry(row.Supervisor), 
-            AdminTimes: this.toDBRowEntry(row.Admin), 
-            Note: row.Comment?.map((comment) => this.toDBNote(comment))
+            AssociateTimes: this.toDBRowEntry(row.AssociateTimeEntry), 
+            SupervisorTimes: this.toDBRowEntry(row.SupervisorTimeEntry), 
+            AdminTimes: this.toDBRowEntry(row.AdminTimeEntry), 
+            Note: row.Notes?.map((comment) => this.toDBNote(comment))
         }); 
     }
 
     // Converts a timesheet entry to our database equivalent from frontend. 
-    private static toDBRowEntry(row: frontendRowTypes.TimeRowEntry | undefined): dbTimesheetTypes.DynamoTimeEntrySchema | undefined{
+    private static toDBRowEntry(row: TimesheetSchemas.TimeEntrySchema | undefined): DynamoSchemas.DynamoTimeEntrySchema | undefined{
         if (row !== undefined) {
-            return dbTimesheetTypes.TimeEntrySchema.parse({
-                StartDateTime: row.Start, 
-                EndDateTime: row.End, 
+            return DynamoSchemas.TimeEntrySchema.parse({
+                StartDateTime: row.StartDateTime, 
+                EndDateTime: row.EndDateTime, 
                 AuthorUUID: row.AuthorID
             }); 
         }
@@ -108,30 +52,21 @@ export class frontendEntryConversions {
     }
 
     // Converts a frontend cell type to our database equivalent. 
-    private static toDBType(entryType: sharedSchemas..RowType): dbTimesheetTypes.DynamoCellType {
+    private static toDBType(entryType: Types.CellType): DynamoSchemas.DynamoCellType {
         switch (entryType) {
-            case sharedSchemas.CellType.REGULAR:
-                return dbTimesheetTypes.DynamoCellType.REGULAR; 
-            case frontendTypes.CellType.PTO:
-                return dbTimesheetTypes.DynamoCellType.PTO; 
+            case Types.CellType.REGULAR:
+                return DynamoSchemas.DynamoCellType.REGULAR; 
+            case Types.CellType.PTO:
+                return DynamoSchemas.DynamoCellType.PTO; 
             default:
                 return undefined 
         }
     }
 
-    // Converts from our frontend week comments to our database equivalents. 
-    private static toDBNotes(comments: frontendRowTypes.CommentSchema[] | undefined): dbTimesheetTypes.DynamoNoteSchema[] | undefined {
-        if (comments !== undefined) {
-            return comments.map((comment) => frontendEntryConversions.toDBNote(comment))
-            
-        }  
-        return undefined;  
-    }
-
-    // Converts a singular week comment / note from our frontend to database. 
-    private static toDBNote(comment: frontendRowTypes.CommentSchema | undefined): dbTimesheetTypes.DynamoNoteSchema | undefined {
+    // Converts a singular weekly comment / note from our frontend to database. 
+    private static toDBNote(comment: TimesheetSchemas.CommentSchema | undefined): DynamoSchemas.DynamoNoteSchema | undefined {
         if (comment !== undefined) {
-            return dbTimesheetTypes.NoteSchema.parse({
+            return DynamoSchemas.NoteSchema.parse({
                 Type: comment.Type, 
                 EntryID: comment.UUID, 
                 AuthorUUID: comment.AuthorID, 
@@ -141,16 +76,5 @@ export class frontendEntryConversions {
             }); 
         }
         return undefined; 
-    }
-
-    // Converts from a singular frontend schedule entry to our database equivalent. 
-    private static toDBSchedule(row: frontendRowTypes.ScheduledRowSchema): dbTimesheetTypes.ScheduleEntrySchema {
-        return dbTimesheetTypes.ScheduleEntrySchema.parse({
-            EntryID: row.UUID, 
-            Date: row.Date, 
-            StartDateTime: row.Entry?.Start, 
-            EndDateTime: row.Entry?.End, 
-            AuthorUUID: row.Entry?.AuthorID 
-        })
     }
 }

@@ -7,13 +7,10 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { WriteEntryToTable, UserTimesheets } from "../dynamodb";
 import TokenClient from './cognito/cognito.keyparser'
-import { DynamoTimesheetSchema } from 'src/db/schemas/DynamoTimesheet';
-import * as frontendTimesheetSchemas from 'src/db/schemas/DynamoTimesheet'
+import * as frontendTimesheetSchemas from 'src/db/dynamoSchemas/DynamoTimesheet'
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { OperationRequestHandler } from 'src/db/timesheets/OperationRequestHandler';
-import { TimesheetUpdateRequest } from 'src/db/schemas/UpdateTimesheet';
 import { Formatter } from 'src/db/timesheets/Formatter';
 
 
@@ -21,7 +18,7 @@ import { Formatter } from 'src/db/timesheets/Formatter';
 @UseGuards(RolesGuard)
 export class AuthController {
 
-  uploadApi = new OperationRequestHandler(); 
+  operationRequestHandler = new OperationRequestHandler(); 
 
   constructor(private authService: AuthService) {}
 
@@ -35,7 +32,7 @@ export class AuthController {
       console.log("Update Timesheet Request: Processing")
       console.log("Request received:")
       console.log(body)
-      const result = this.uploadApi.updateTimesheet(body, userId); 
+      const result = this.operationRequestHandler.updateTimesheet(body, userId); 
       //TODO: Do something with this result? 
       return result; 
     }

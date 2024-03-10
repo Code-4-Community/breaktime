@@ -6,8 +6,8 @@ import { z } from "zod";
 export const CompanySchema = z.object({
   CompanyID: z.string(),
   CompanyName: z.string(),
-  AssociateIDs: z.array(z.string().nonempty()),
-  SupervisorIDs: z.array(z.string().nonempty()),
+  AssociateIDs: z.array(z.string().min(1)),
+  SupervisorIDs: z.array(z.string().min(1)),
 });
 
 /**

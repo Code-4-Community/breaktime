@@ -1,4 +1,4 @@
-import * as timesheetSchemas from 'src/db/schemas/DynamoTimesheet'
+import * as timesheetSchemas from 'src/db/dynamoSchemas/DynamoTimesheet'
 
 import * as constants from 'src/constants'
 import { v4 as uuidv4 } from 'uuid';

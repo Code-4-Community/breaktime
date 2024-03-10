@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { NoteSchema, TimesheetEntrySchema } from "./Timesheet-backenddb";
+import { TimesheetStatus } from "./CellTypes";
 
 /*
     The supported timesheet operations currently supported. 

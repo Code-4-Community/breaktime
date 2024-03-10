@@ -1,4 +1,4 @@
-import * as DynamoSchemas from '../schemas/DynamoTimesheet'
+import * as DynamoSchemas from '../dynamoSchemas/DynamoTimesheet'
 import * as frontendRowTypes from '../frontend/RowSchema'
 import * as frontendTimesheetTypes from '@org/schemas/'
 
