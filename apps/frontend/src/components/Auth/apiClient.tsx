@@ -111,24 +111,6 @@ export class ApiClient {
       },
     ];
   }
-  //TODO: hook up to backend
-  public async saveComment(comment: string, timesheetID: number): Promise<Boolean> {
-    // export const TimesheetUpdateRequest = z.object({
-    //   TimesheetID: z.number(), 
-    //   Operation: z.enum([
-    //       TimesheetOperations.INSERT,
-    //       TimesheetOperations.UPDATE,
-    //       TimesheetOperations.DELETE,
-    //       TimesheetOperations.STATUS_CHANGE, 
-    //       TimesheetOperations.CREATE_TIMESHEET
-    //       ]),  
-    //   Payload: z.any()
-      // gab current timesheetID
-      // update comment/report in ThemeProviderpass entire timesheet into save report/comment
-  // })
-  
-    return true;
-  }
 
   //TODO: hook up to backend
   public async saveReport(report: ReportOptions, timesheetID: number): Promise<Boolean> {

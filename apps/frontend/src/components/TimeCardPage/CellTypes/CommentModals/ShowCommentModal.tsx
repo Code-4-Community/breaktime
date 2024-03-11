@@ -211,9 +211,7 @@ export default function ShowCommentModal({
         console.log(rowToMutate)
         
         //Triggering parent class to update its references here as well 
-        updateField("Comment", rowToMutate); 
-        
-        apiClient.saveComment(remark, timesheetID).then((resp) =>
+        updateField("Comment", rowToMutate).then((resp) =>
           {if (resp) { 
             toast(createToast({position: 'bottom-right',title:'success.', description: "Your report has been saved.", status: "success"}))
           } else {
