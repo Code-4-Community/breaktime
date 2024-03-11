@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { CellStatus, CellType, CommentType, ReportOptions } from "./CellTypes";
-import { StatusType } from "./StatusSchema";
 
 /**
  * A collection of various schemas used in creating a shift entry in the timesheet. These schemas are internal models,
@@ -21,7 +20,7 @@ export const TimeEntrySchema = z.union([z.undefined(), z.object({
 export type TimeEntrySchema = z.infer<typeof TimeEntrySchema>
 
 export const CommentSchema = z.object({
-  UUID: z.string(), 
+  EntryId: z.string(), 
   AuthorID:z.string(), 
   Type: z.nativeEnum(CellType),
   Timestamp: z.number(), 
@@ -32,7 +31,8 @@ export const CommentSchema = z.object({
 export type CommentSchema = z.infer<typeof CommentSchema>
 
 export const ReportSchema = z.object({
-  AuthorID:z.string(), 
+  AuthorID:z.string(),
+  EntryId: z.string(), 
   Timestamp: z.number(),
   Type: z.nativeEnum(CommentType), 
   CorrectTime: z.number(),
@@ -43,6 +43,26 @@ export const ReportSchema = z.object({
 }); 
 
 export type ReportSchema = z.infer<typeof ReportSchema>
+
+// The status is either undefined, for not being at that stage yet, or
+// contains the date and author of approving this submission
+export const StatusEntryType = z.union([
+  z.object({
+    Date: z.number(),
+    AuthorID: z.string(),
+  }),
+  z.undefined(),
+]);
+
+// Status type contains the three stages of the pipeline we have defined
+export const StatusEntry = z.object({
+  HoursSubmitted: StatusEntryType,
+  HoursReviewed: StatusEntryType,
+  Finalized: StatusEntryType,
+});
+
+export type StatusEntryType = z.infer<typeof StatusEntryType>;
+export type StatusEntry = z.infer<typeof StatusEntry>;
 
 /**
  * The schema for a shift entry (visually, a row in the timesheet).
@@ -69,7 +89,7 @@ export const TimeSheetSchema = z.object({
   TimesheetID: z.number(),
   UserID: z.string(),
   StartDate: z.number(),
-  Status: StatusType,
+  Status: StatusEntry,
   CompanyID: z.string(),
   TableData: z.array(ShiftSchema),
   WeekNotes: z.union([z.undefined(), z.array(CommentSchema)]),

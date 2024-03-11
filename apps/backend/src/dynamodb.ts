@@ -24,6 +24,7 @@ console.log("secret", process.env.AWS_SECRET_ACCESS_KEY!);
 
 const client = new DynamoDB({ region: "us-east-2" });
 
+// TODO : This should return the 'internal' version of the timesheet schema I think?
 export async function UserTimesheets(uuid: string): Promise<DynamoTimesheetSchema[]> {
   // Set up the query to get all timesheets for a given uuid
   const command = new QueryCommand({
@@ -128,7 +129,8 @@ export async function GetCompanyData(
   return companyData[0];
 }
 
-export async function WriteEntryToTable(table:DynamoTimesheetSchema): Promise<Boolean> {
+// TODO: 
+export async function WriteEntryToTable(table: DynamoTimesheetSchema): Promise<Boolean> {
   const options = {
     removeUndefinedValues: true
   };

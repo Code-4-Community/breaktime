@@ -1,6 +1,5 @@
-import {DynamoTimesheetSchema, DynamoShiftSchema, ScheduleEntrySchema, DynamoNoteSchema, StatusEntryType} from '../dynamoSchemas/DynamoTimesheet'
-import {UpdateRequest, InsertRequest, DeleteRequest, TimesheetListItems, StatusChangeRequest} from '../dynamoSchemas/UpdateTimesheet'
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import {OperationRequests, TimesheetSchemas} from '@org/schemas'
+import { CommentSchema } from '../../../../../libs/shared/schemas/src/lib/TimesheetRow';
 //Not sure why but only works if imported like this :| 
 const moment = require('moment-timezone'); 
 
@@ -9,13 +8,13 @@ const moment = require('moment-timezone');
 */
 interface ItemsOperations {
     // Insert into the list of items 
-    Insert(timesheet: DynamoTimesheetSchema, body:InsertRequest): DynamoTimesheetSchema 
+    Insert(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.InsertRequest): TimesheetSchemas.TimeSheetSchema 
     // Delete a specific item from the list of items 
-    Delete(timesheet: DynamoTimesheetSchema, body:DeleteRequest): DynamoTimesheetSchema 
+    Delete(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.DeleteRequest): TimesheetSchemas.TimeSheetSchema 
     // Update a specific item in the list of items 
-    Update(timesheet: DynamoTimesheetSchema, body:UpdateRequest) : DynamoTimesheetSchema 
-    // TODO: add a new StatusChange(....) function 
-    StatusChange(timesheet: DynamoTimesheetSchema, body:StatusChangeRequest): DynamoTimesheetSchema
+    Update(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.UpdateRequest) : TimesheetSchemas.TimeSheetSchema 
+    // Update the status of a timesheet
+    StatusChange(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.StatusChangeRequest): TimesheetSchemas.TimeSheetSchema
 }
 
 /*
@@ -25,17 +24,14 @@ interface ItemsOperations {
 export class ItemsDelegator {
     // Class to determine what field of the timesheet we are performing item operations on 
     tableData = new HoursDataOperations() 
-    scheduleData = new ScheduledDataOperations() 
     notesData = new NotesOperations()
     
 
-    public AttributeToModify(body: InsertRequest | DeleteRequest | UpdateRequest) {
+    public AttributeToModify(body: OperationRequests.InsertRequest | OperationRequests.DeleteRequest | OperationRequests.UpdateRequest) {
         switch (body.Type) {
-            case TimesheetListItems.TABLEDATA:
+            case OperationRequests.TimesheetListItems.TABLEDATA:
                 return this.tableData;
-            case TimesheetListItems.SCHEDULEDATA:
-                return this.scheduleData; 
-            case TimesheetListItems.WEEKNOTES:
+            case OperationRequests.TimesheetListItems.WEEKNOTES:
                 return this.notesData;
             default:
                 throw new Error ("Invalid operation provided"); 
@@ -49,10 +45,11 @@ export class ItemsDelegator {
     i.e. the user entered rows of the time they worked. 
 */
 export class HoursDataOperations implements ItemsOperations {
-    public Insert(timesheet: DynamoTimesheetSchema, body:InsertRequest)  {
-        const data = timesheet.HoursData; 
 
-        const item = TimesheetEntrySchema.parse(body.Item); 
+    public Insert(timesheet: TimesheetSchemas.TimeSheetSchema, body: OperationRequests.InsertRequest)  {
+        const data = timesheet.TableData; 
+
+        const item = TimesheetSchemas.ShiftSchema.parse(body.Item); 
         // Sorting is currently only day by day based - need some way of minute by minute 
         var idx = 0; 
         for (idx; idx < data.length; idx += 1) {
@@ -61,11 +58,12 @@ export class HoursDataOperations implements ItemsOperations {
                 break; 
             }
         }
+
         //Insert into front of list 
         if (idx === 0) {
             return {
                 ...timesheet, 
-                HoursData: [
+                TableData: [
                     item,
                     ...data 
                 ]
@@ -74,7 +72,7 @@ export class HoursDataOperations implements ItemsOperations {
             //End of list 
             return {
                 ...timesheet, 
-                HoursData: [
+                TableData: [
                     ...data,
                     item
                 ]
@@ -82,7 +80,7 @@ export class HoursDataOperations implements ItemsOperations {
         } else {
             return {
                 ...timesheet, 
-                HoursData: [
+                TableData: [
                     ...data.slice(0, idx), 
                     item, 
                     ...data.slice(idx + 1 )
@@ -90,23 +88,23 @@ export class HoursDataOperations implements ItemsOperations {
             }
         }
     }
-    public Delete(timesheet: DynamoTimesheetSchema, body:DeleteRequest)  {
+    public Delete(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.DeleteRequest)  {
         return {
             ...timesheet, 
-            HoursData: timesheet.HoursData.filter((row) => row.EntryID !== body.Id)
+            TableData: timesheet.TableData.filter((row) => row.EntryId !== body.Id)
         }; 
          
     }
 
-    public  Update(timesheet: DynamoTimesheetSchema, body:UpdateRequest)  {
-        if (timesheet.HoursData?.filter((row) => row.EntryID === body.Id).length === 0) {
+    public  Update(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.UpdateRequest)  {
+        if (timesheet.TableData?.filter((row) => row.EntryId === body.Id).length === 0) {
             throw new Error("Could not find a row with that ID"); 
         }
         return {
             ...timesheet, 
-            HoursData: timesheet.HoursData.map((row) => {
+            TableData: timesheet.TableData.map((row) => {
                 // Only update the one specific id 
-                if (row.EntryID === body.Id) {
+                if (row.EntryId === body.Id) {
                     return {
                         ...row, 
                         [body.Attribute] : body.Data
@@ -117,7 +115,7 @@ export class HoursDataOperations implements ItemsOperations {
         }
     }
 
-    public StatusChange(timesheet: DynamoTimesheetSchema, body:StatusChangeRequest)  {
+    public StatusChange(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.StatusChangeRequest)  {
         if (timesheet.TimesheetID !== body.TimesheetId) {
             throw new Error("Requested timesheet does not match timesheet ID of timesheet being updated");
         }
@@ -126,7 +124,7 @@ export class HoursDataOperations implements ItemsOperations {
         As an example...
         original Status : {HoursSubmitted=undefined, HoursReviewed=undefined, Finalized=undefined}
 
-        StatusChangeRequest: {TimesheetId=abc, AssociateId=123456, authorId:123456, dateSubmited=0638457, StatusType='HoursSubmitted'}
+        OperationRequests.StatusChangeRequest: {TimesheetId=abc, AssociateId=123456, authorId:123456, dateSubmited=0638457, StatusType='HoursSubmitted'}
 
         new Status: {HoursSubmitted={Date: 0638457, AuthorID: 123456}, HoursReviewed=undefined, Finalized=undefined}
         */
@@ -146,102 +144,31 @@ export class HoursDataOperations implements ItemsOperations {
     }
 }
 
-// Class for operations on the schedule data field - i.e. the supervisor reported hours they should have worked. 
-export class ScheduledDataOperations implements ItemsOperations {
-    public  Insert(timesheet: DynamoTimesheetSchema, body:InsertRequest)  {
-        const data = timesheet.ScheduleData; 
-        const item = ScheduleEntrySchema.parse(body.Item); 
-        //TODO - Fledge out the sorting to be simplified / actually accurate on the minute by minute. Currently is only based on day
-        var idx = 0; 
-        for (idx; idx < data.length; idx += 1) {
-            const row = data[idx]; 
-            if (moment.unix(row.Date).isAfter(moment.unix(item.Date), 'day')) {
-                break; 
-            }
-        }
-        //Insert into front of list 
-        if (idx === 0) {
-            return {
-                ...timesheet, 
-                ScheduleData: [
-                    item,
-                    ...data 
-                ]
-            }; 
-        } else if (idx === data.length) {
-            //End of list 
-            return {
-                ...timesheet, 
-                ScheduleData: [
-                    ...data,
-                    item
-                ]
-            }; 
-        } else {
-            return {
-                ...timesheet, 
-                ScheduleData: [
-                    ...data.slice(0, idx), 
-                    item, 
-                    ...data.slice(idx + 1 )
-                ]
-            }
-        }
-    }
-    public Delete(timesheet: DynamoTimesheetSchema, body:DeleteRequest)  {
-        return {
-            ...timesheet, 
-            ScheduleData: timesheet.ScheduleData.filter((row) => row.EntryID !== body.Id)
-        }
-    }
-
-    public  Update(timesheet: DynamoTimesheetSchema, body:UpdateRequest)  {
-        //TODO - Add in functionality to trigger insert instead of update if ID does not yet exist
-        return {
-            ...timesheet, 
-            ScheduleData: timesheet.ScheduleData.map((row) => {
-                // Only update the one specific id 
-                if (row.EntryID === body.Id) {
-                    return {
-                        ...row, 
-                        [body.Attribute] : body.Data
-                    };  
-                } 
-                return row; 
-            })
-        }
-    }
-
-    public StatusChange(timesheet: DynamoTimesheetSchema, body:StatusChangeRequest)  {
-        return undefined;
-    }
-}
-
 // Operations on the weekly notes on the timesheet - i.e. comments relating to the entire timesheet / specific day worked. 
 export class NotesOperations implements ItemsOperations {
-    public  Insert(timesheet: DynamoTimesheetSchema, body:InsertRequest)  {
+    public  Insert(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.InsertRequest)  {
         return {
             ...timesheet, 
             WeekNotes: [
                 ...timesheet.WeekNotes, 
-                NoteSchema.parse(body.Item)
+                CommentSchema.parse(body.Item) // TODO : Need to add report parsing as well
             ]
         }; 
     }
-    public Delete(timesheet: DynamoTimesheetSchema, body:DeleteRequest)  {
+    public Delete(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.DeleteRequest)  {
         return {
             ...timesheet, 
-            WeekNotes: timesheet.WeekNotes.filter((note) => note.EntryID !== body.Id)
+            WeekNotes: timesheet.WeekNotes.filter((note) => note.EntryId !== body.Id)
         }
     }
 
-    public  Update(timesheet: DynamoTimesheetSchema, body:UpdateRequest)   {
+    public  Update(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.UpdateRequest)   {
         //TODO - Add in functionality to trigger insert instead of update if ID does not yet exist
 
         return {
             ...timesheet,
             WeekNotes: timesheet.WeekNotes.map((note) => {
-                if (note.EntryID === body.Id) {
+                if (note.EntryId === body.Id) {
                     return {
                         ...note, 
                         [body.Attribute] : body.Data
@@ -252,7 +179,7 @@ export class NotesOperations implements ItemsOperations {
         }
     }
 
-    public StatusChange(timesheet: DynamoTimesheetSchema, body:StatusChangeRequest)  {
+    public StatusChange(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.StatusChangeRequest)  {
         return undefined;
     }
 }
