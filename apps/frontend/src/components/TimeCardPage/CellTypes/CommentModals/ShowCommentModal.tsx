@@ -58,7 +58,7 @@ const saveEditedComment = (
   if (rowToMutate === undefined) {
       rowToMutate = comments;
   }
-  // Value is null, so mark it as undefined in our processing 
+
   rowToMutate = setComments([...comments, newComment]);
   console.log(rowToMutate)
   
@@ -84,7 +84,7 @@ const deleteComment = (
   if (rowToMutate === undefined) {
       rowToMutate = comments;
   }
-  // Value is null, so mark it as undefined in our processing 
+
   rowToMutate = setComments([...comments, comment]);
   console.log(rowToMutate)
   
@@ -206,7 +206,7 @@ export default function ShowCommentModal({
         if (rowToMutate === undefined) {
             rowToMutate = comments;
         }
-        // Value is null, so mark it as undefined in our processing 
+ 
         rowToMutate = setComments([...comments, createNewComment(user, CommentType.Comment, remark)]);
         console.log(rowToMutate)
         
