@@ -54,16 +54,16 @@ const saveEditedComment = (
   prevComment.State = CellStatus.Deleted
   setComments(getAllActiveCommentsOfType(typeOfComment, [...comments, newComment]));
   
-  var rowToMutate = row.Comment; 
-  if (rowToMutate === undefined) {
-      rowToMutate = comments;
+  var updatedShiftComments = row.Comment; 
+  if (updatedShiftComments === undefined) {
+      updatedShiftComments = comments;
   }
 
-  rowToMutate = setComments([...comments, newComment]);
-  console.log(rowToMutate)
+  updatedShiftComments = setComments([...comments, newComment]);
+  console.log(updatedShiftComments)
   
   //Triggering parent class to update its references here as well 
-  updateField("Comment", rowToMutate); 
+  updateField("Comment", updatedShiftComments); 
 };
 
 const deleteComment = (
@@ -80,16 +80,16 @@ const deleteComment = (
   if (comments.length === 1) {
     onCloseDisplay()
   }
-  var rowToMutate = row.Comment; 
-  if (rowToMutate === undefined) {
-      rowToMutate = comments;
+  var updatedShiftComments = row.Comment; 
+  if (updatedShiftComments === undefined) {
+      updatedShiftComments = comments;
   }
 
-  rowToMutate = setComments([...comments, comment]);
-  console.log(rowToMutate)
+  updatedShiftComments = setComments([...comments, comment]);
+  console.log(updatedShiftComments)
   
   //Triggering parent class to update its references here as well 
-  updateField("Comment", rowToMutate); 
+  updateField("Comment", updatedShiftComments); 
 }
 
 interface ShowCommentModalProps {
@@ -202,16 +202,16 @@ export default function ShowCommentModal({
   
       const handleSubmit = () => {
         
-        var rowToMutate = row.Comment; 
-        if (rowToMutate === undefined) {
-            rowToMutate = comments;
+        var updatedShiftComments = row.Comment; 
+        if (updatedShiftComments === undefined) {
+            updatedShiftComments = comments;
         }
  
-        rowToMutate = setComments([...comments, createNewComment(user, CommentType.Comment, remark)]);
-        console.log(rowToMutate)
+        updatedShiftComments = setComments([...comments, createNewComment(user, CommentType.Comment, remark)]);
+        console.log(updatedShiftComments)
         
         //Triggering parent class to update its references here as well 
-        updateField("Comment", rowToMutate).then((resp) =>
+        updateField("Comment", updatedShiftComments).then((resp) =>
           {if (resp) { 
             toast(createToast({position: 'bottom-right',title:'success.', description: "Your report has been saved.", status: "success"}))
           } else {
