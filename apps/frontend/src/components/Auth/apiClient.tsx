@@ -96,7 +96,14 @@ export class ApiClient {
 
   // a function that returns list of multiple users based on list of userIds passed in
   public async getUsers(userIds: String[]): Promise<UserSchema[]> {
-    var allUsers = await Promise.all(userIds.map(userId => this.getUser(userId)));
+    var allUsers;
+
+    try {
+      allUsers = await Promise.all(userIds.map(userId => this.getUser(userId)));
+    }
+    catch (e) {
+      console.log(e)
+    }
 
     return allUsers
   }
@@ -109,28 +116,35 @@ export class ApiClient {
 
     var userConverted = {}
 
-    await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
+    try {
+      await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
 
-      var userType = {}
+        var userType = {}
 
-      // set current user's type
-      if (userList[0].Type === 'breaktime-associate') {
-        userType = UserTypes.Associate
-      }
-      else {
-        userType = UserTypes.Supervisor
-      }
+        // set current user's type
+        if (userList[0].Type === 'breaktime-associate') {
+          userType = UserTypes.Associate
+        }
+        else {
+          userType = UserTypes.Supervisor
+        }
 
-      // create current user
-      userConverted = {
-        UserID: userList[0].userID,
-        FirstName: userList[0].firstName,
-        LastName: userList[0].lastName,
-        Type: userType
-      };
+        // create current user
+        userConverted = {
+          UserID: userList[0].userID,
+          FirstName: userList[0].firstName,
+          LastName: userList[0].lastName,
+          Type: userType
+        };
 
-    })
+      })
+    }
 
+    catch (e) {
+      console.log(e)
+    }
+
+  
     return userConverted
 
   }
