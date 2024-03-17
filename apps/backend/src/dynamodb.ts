@@ -1,9 +1,6 @@
 import {
-  DynamoDBClient,
   DynamoDB,
-  ScanCommand,
   QueryCommand,
-  BatchGetItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { unmarshall, marshall } from "@aws-sdk/util-dynamodb";
 import * as dotenv from "dotenv";
@@ -41,7 +38,7 @@ export async function UserTimesheets(uuid: string): Promise<DynamoTimesheetSchem
     throw new Error("Invalid response from DynamoDB, got undefined/null");
   }
   const unmarshalledItems = dynamoRawResult.Items.map((i) => unmarshall(i));
-  const timesheetData = unmarshalledItems.map((i) => TimeSheetSchema.parse(i));
+  const timesheetData = unmarshalledItems.map((i) => DynamoTimesheetSchema.parse(i));
 
   return timesheetData;
 }
@@ -145,7 +142,7 @@ export async function WriteEntryToTable(table: DynamoTimesheetSchema): Promise<B
   
   try {
     //Input validation - if this fails we do not upload following this as it did not have appropriate types
-    TimeSheetSchema.parse(table);
+    DynamoTimesheetSchema.parse(table);
   } catch (error) {
     console.log("Table failed to parse: ", error);
     return false;

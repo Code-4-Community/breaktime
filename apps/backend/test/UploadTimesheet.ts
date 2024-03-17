@@ -14,7 +14,7 @@ const TIMEZONE = "America/New_York";
 const UUID = "4c8c5ad4-a8ab-4c92-b33f-b8f932b9e0b5"
 
 function createTimeEntry(start, end) {
-    return TimeEntrySchema.parse({
+    return DynamoTimeEntrySchema.parse({
         StartDateTime: start, 
         EndDateTime: end, 
         AuthorUUID: UUID
@@ -22,7 +22,7 @@ function createTimeEntry(start, end) {
 }
 
 function createEntry(cellType, date, associate, note) {
-    return TimesheetEntrySchema.parse({
+    return DynamoShiftSchema.parse({
         Type: cellType, 
         EntryID: uuidv4(), 
         Date: date, 
@@ -37,11 +37,11 @@ const current = moment().tz(TIMEZONE);
 
 const daysOfWeek = moment().tz(TIMEZONE).startOf('week'); 
 
-const timesheetToUpload = TimeSheetSchema.parse({
+const timesheetToUpload = DynamoTimesheetSchema.parse({
     TimesheetID: Math.round(Math.random() * 1000000000), 
     UserID: UUID, 
     StartDate: moment().tz(TIMEZONE).startOf('week').day(0).unix(), 
-    Status: TimesheetStatus.parse({
+    Status: DynamoStatusSchema.parse({
         HoursSubmitted: undefined, 
         HoursReviewed: undefined, 
         ScheduleSubmitted: undefined, 
