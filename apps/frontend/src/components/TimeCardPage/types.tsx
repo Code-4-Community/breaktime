@@ -5,6 +5,7 @@ export enum Color {
     Gray = "gray"
 }
 
+// TODO: Consolidate CardState with ReviewStages
 export enum CardState {
     Rejected = "Rejected",
     InReviewEmployer = "In Review - Employer",

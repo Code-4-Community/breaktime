@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { RowSchema } from '../../../schemas/RowSchema';
-import { Box } from '@chakra-ui/react';
-
+import React, { useEffect, useState } from "react";
+import { ShiftSchema } from "@org/schemas";
+import { Box } from "@chakra-ui/react";
 
 interface DurationProps {
-  row: RowSchema;
+  row: ShiftSchema;
 }
 
 export function Duration(props: DurationProps) {
@@ -12,9 +11,24 @@ export function Duration(props: DurationProps) {
   const [duration, setDuration] = useState("");
 
   useEffect(() => {
-    if (row.Associate !== undefined && row.Associate.Start !== undefined && row.Associate.End !== undefined) {
-      setDuration(String(((row.Associate.End - row.Associate.Start) / 60).toFixed(2)));
+    if (
+      row.AssociateTimeEntry !== undefined &&
+      row.AssociateTimeEntry.StartDateTime !== undefined &&
+      row.AssociateTimeEntry.EndDateTime !== undefined
+    ) {
+      setDuration(
+        String(
+          (
+            (row.AssociateTimeEntry.EndDateTime -
+              row.AssociateTimeEntry.StartDateTime) /
+            60
+          ).toFixed(2)
+        )
+      );
     }
-  }, [row.Associate?.Start, row.Associate?.End])
-  return <Box>{duration}</Box>
+  }, [
+    row.AssociateTimeEntry?.StartDateTime,
+    row.AssociateTimeEntry?.EndDateTime,
+  ]);
+  return <Box>{duration}</Box>;
 }

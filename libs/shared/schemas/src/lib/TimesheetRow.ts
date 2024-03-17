@@ -22,7 +22,7 @@ export type TimeEntrySchema = z.infer<typeof TimeEntrySchema>
 export const CommentSchema = z.object({
   EntryId: z.string(), 
   AuthorID:z.string(), 
-  Type: z.nativeEnum(CellType),
+  Type: z.nativeEnum(CommentType),
   Timestamp: z.number(), 
   Content: z.string(), 
   State: z.nativeEnum(CellStatus),
@@ -81,7 +81,7 @@ export const ShiftSchema = z.object({
   AssociateTimeEntry: TimeEntrySchema, 
   SupervisorTimeEntry: TimeEntrySchema, 
   AdminTimeEntry: TimeEntrySchema, 
-  Notes: z.array(CommentSchema || ReportSchema).default([]), // TODO : This will likely need to be two separate lists.
+  Notes: z.union([z.undefined(), z.array(CommentSchema || ReportSchema)]), // TODO : This will likely need to be two separate lists.
 }); 
 export type ShiftSchema = z.infer<typeof ShiftSchema>
 

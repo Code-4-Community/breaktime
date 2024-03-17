@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { CellType } from "../types";
+import { CellType } from "@org/schemas";
 import { Select } from "@chakra-ui/react";
 
 interface TypeProps {

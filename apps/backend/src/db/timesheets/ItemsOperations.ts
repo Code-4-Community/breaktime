@@ -1,5 +1,4 @@
-import {OperationRequests, TimesheetSchemas} from '@org/schemas'
-import { CommentSchema } from '../../../../../libs/shared/schemas/src/lib/TimesheetRow';
+import {DeleteRequest, InsertRequest, StatusChangeRequest, TimesheetListItems, UpdateRequest, TimeSheetSchema, CommentSchema, ShiftSchema} from '@org/schemas'
 //Not sure why but only works if imported like this :| 
 const moment = require('moment-timezone'); 
 
@@ -8,13 +7,13 @@ const moment = require('moment-timezone');
 */
 interface ItemsOperations {
     // Insert into the list of items 
-    Insert(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.InsertRequest): TimesheetSchemas.TimeSheetSchema 
+    Insert(timesheet: TimeSheetSchema, body:InsertRequest): TimeSheetSchema 
     // Delete a specific item from the list of items 
-    Delete(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.DeleteRequest): TimesheetSchemas.TimeSheetSchema 
+    Delete(timesheet: TimeSheetSchema, body:DeleteRequest): TimeSheetSchema 
     // Update a specific item in the list of items 
-    Update(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.UpdateRequest) : TimesheetSchemas.TimeSheetSchema 
+    Update(timesheet: TimeSheetSchema, body:UpdateRequest) : TimeSheetSchema 
     // Update the status of a timesheet
-    StatusChange(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.StatusChangeRequest): TimesheetSchemas.TimeSheetSchema
+    StatusChange(timesheet: TimeSheetSchema, body:StatusChangeRequest): TimeSheetSchema
 }
 
 /*
@@ -27,11 +26,11 @@ export class ItemsDelegator {
     notesData = new NotesOperations()
     
 
-    public AttributeToModify(body: OperationRequests.InsertRequest | OperationRequests.DeleteRequest | OperationRequests.UpdateRequest) {
+    public AttributeToModify(body: InsertRequest | DeleteRequest | UpdateRequest) {
         switch (body.Type) {
-            case OperationRequests.TimesheetListItems.TABLEDATA:
+            case TimesheetListItems.TABLEDATA:
                 return this.tableData;
-            case OperationRequests.TimesheetListItems.WEEKNOTES:
+            case TimesheetListItems.WEEKNOTES:
                 return this.notesData;
             default:
                 throw new Error ("Invalid operation provided"); 
@@ -46,10 +45,10 @@ export class ItemsDelegator {
 */
 export class HoursDataOperations implements ItemsOperations {
 
-    public Insert(timesheet: TimesheetSchemas.TimeSheetSchema, body: OperationRequests.InsertRequest)  {
+    public Insert(timesheet: TimeSheetSchema, body: InsertRequest)  {
         const data = timesheet.TableData; 
 
-        const item = TimesheetSchemas.ShiftSchema.parse(body.Item); 
+        const item = ShiftSchema.parse(body.Item); 
         // Sorting is currently only day by day based - need some way of minute by minute 
         var idx = 0; 
         for (idx; idx < data.length; idx += 1) {
@@ -88,7 +87,7 @@ export class HoursDataOperations implements ItemsOperations {
             }
         }
     }
-    public Delete(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.DeleteRequest)  {
+    public Delete(timesheet: TimeSheetSchema, body:DeleteRequest)  {
         return {
             ...timesheet, 
             TableData: timesheet.TableData.filter((row) => row.EntryId !== body.Id)
@@ -96,7 +95,7 @@ export class HoursDataOperations implements ItemsOperations {
          
     }
 
-    public  Update(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.UpdateRequest)  {
+    public  Update(timesheet: TimeSheetSchema, body:UpdateRequest)  {
         if (timesheet.TableData?.filter((row) => row.EntryId === body.Id).length === 0) {
             throw new Error("Could not find a row with that ID"); 
         }
@@ -115,7 +114,7 @@ export class HoursDataOperations implements ItemsOperations {
         }
     }
 
-    public StatusChange(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.StatusChangeRequest)  {
+    public StatusChange(timesheet: TimeSheetSchema, body:StatusChangeRequest)  {
         if (timesheet.TimesheetID !== body.TimesheetId) {
             throw new Error("Requested timesheet does not match timesheet ID of timesheet being updated");
         }
@@ -124,7 +123,7 @@ export class HoursDataOperations implements ItemsOperations {
         As an example...
         original Status : {HoursSubmitted=undefined, HoursReviewed=undefined, Finalized=undefined}
 
-        OperationRequests.StatusChangeRequest: {TimesheetId=abc, AssociateId=123456, authorId:123456, dateSubmited=0638457, StatusType='HoursSubmitted'}
+        StatusChangeRequest: {TimesheetId=abc, AssociateId=123456, authorId:123456, dateSubmited=0638457, StatusType='HoursSubmitted'}
 
         new Status: {HoursSubmitted={Date: 0638457, AuthorID: 123456}, HoursReviewed=undefined, Finalized=undefined}
         */
@@ -146,7 +145,7 @@ export class HoursDataOperations implements ItemsOperations {
 
 // Operations on the weekly notes on the timesheet - i.e. comments relating to the entire timesheet / specific day worked. 
 export class NotesOperations implements ItemsOperations {
-    public  Insert(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.InsertRequest)  {
+    public  Insert(timesheet: TimeSheetSchema, body:InsertRequest)  {
         return {
             ...timesheet, 
             WeekNotes: [
@@ -155,14 +154,14 @@ export class NotesOperations implements ItemsOperations {
             ]
         }; 
     }
-    public Delete(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.DeleteRequest)  {
+    public Delete(timesheet: TimeSheetSchema, body:DeleteRequest)  {
         return {
             ...timesheet, 
             WeekNotes: timesheet.WeekNotes.filter((note) => note.EntryId !== body.Id)
         }
     }
 
-    public  Update(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.UpdateRequest)   {
+    public  Update(timesheet: TimeSheetSchema, body:UpdateRequest)   {
         //TODO - Add in functionality to trigger insert instead of update if ID does not yet exist
 
         return {
@@ -179,7 +178,7 @@ export class NotesOperations implements ItemsOperations {
         }
     }
 
-    public StatusChange(timesheet: TimesheetSchemas.TimeSheetSchema, body:OperationRequests.StatusChangeRequest)  {
+    public StatusChange(timesheet: TimeSheetSchema, body:StatusChangeRequest)  {
         return undefined;
     }
 }

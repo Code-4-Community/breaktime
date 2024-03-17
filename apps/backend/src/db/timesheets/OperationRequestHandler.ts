@@ -1,4 +1,4 @@
-import { OperationRequests } from "@org/schemas";
+import { TimesheetOperations, TimesheetUpdateRequest } from "@org/schemas";
 
 import {UserTimesheets} from "src/dynamodb"
 import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
@@ -14,7 +14,7 @@ export class OperationRequestHandler {
     
     private delegator = new ItemsDelegator() 
 
-    public async updateTimesheet(request: OperationRequests.TimesheetUpdateRequest, userid: string): Promise<string> {
+    public async updateTimesheet(request: TimesheetUpdateRequest, userid: string): Promise<string> {
         /*
             Provided a request to update a timesheet, processes the request and then 
             return a response indicating success or failure. 
@@ -24,25 +24,25 @@ export class OperationRequestHandler {
         */
         //Retrieve a specified timesheet 
         console.log(request)
-        const userTimesheets = await UserTimesheets(userid); 
+        const userTimesheets = await UserTimesheets(userid); // TODO: SHould use formatter for this? formatter.
         const selectedTimesheet = userTimesheets.filter((timesheet) => timesheet.TimesheetID === request.TimesheetID)
         if (selectedTimesheet.length == 1) {
             const convertedTimesheet = DynamoSchemaConverter.toFrontendTimesheet(selectedTimesheet[0]);
             console.log("Timesheet found for Update Timesheet Operation %s", request.Operation.valueOf())
             var modifiedTimesheet = undefined; 
             switch (request.Operation) {
-                case OperationRequests.TimesheetOperations.STATUS_CHANGE:
+                case TimesheetOperations.STATUS_CHANGE:
                     // This operation should only be supported for Hours Data
                     modifiedTimesheet = this.delegator.tableData.StatusChange(convertedTimesheet, request.Payload);
                     break; 
-                case OperationRequests.TimesheetOperations.DELETE: 
+                case TimesheetOperations.DELETE: 
                     modifiedTimesheet =  this.delegator.AttributeToModify(request.Payload).Delete(convertedTimesheet, request.Payload); 
                     break; 
-                case OperationRequests.TimesheetOperations.INSERT:
+                case TimesheetOperations.INSERT:
                     //Determine attribute we are modifying and then also convert the field from frontend to backend. 
                     modifiedTimesheet =  this.delegator.AttributeToModify(request.Payload).Insert(convertedTimesheet, request.Payload); 
                     break; 
-                case OperationRequests.TimesheetOperations.UPDATE:
+                case TimesheetOperations.UPDATE:
                     //Determine attribute we are modifying and then also convert the field from frontend to backend. 
                     modifiedTimesheet =  this.delegator.AttributeToModify(request.Payload).Update(convertedTimesheet, request.Payload); 
                     break; 

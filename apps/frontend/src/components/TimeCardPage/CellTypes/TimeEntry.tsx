@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { RowSchema } from "../../../schemas/RowSchema";
+import { ShiftSchema } from "@org/schemas";
 import { Input } from '@chakra-ui/react';
 import moment from 'moment';
 
 interface TimeEntryProps {
   field: string;
-  row: RowSchema;
+  row: ShiftSchema;
   updateFields: Function;
 }
 
@@ -25,10 +25,10 @@ export function TimeEntry(props: TimeEntryProps) {
         setMinutes(calculatedTime); 
         
         //Triggering parent class to update its references here as well 
-        var rowToMutate = props.row.Associate; 
+        var rowToMutate = props.row.AssociateTimeEntry; 
         if (rowToMutate === undefined) {
             rowToMutate = {
-                Start:undefined, End:undefined, AuthorID:"<TODO-add ID>"
+              StartDateTime:undefined, EndDateTime:undefined, AuthorID:"<TODO-add ID>"
             }
         }
 
@@ -62,8 +62,8 @@ export function TimeEntry(props: TimeEntryProps) {
       }
   
   useEffect(() => {
-    if (props.row.Associate !== undefined) {
-      setMinutes(props.row.Associate[props.field]);
+    if (props.row.AssociateTimeEntry !== undefined) {
+      setMinutes(props.row.AssociateTimeEntry[props.field]);
     }
   }, []);
 

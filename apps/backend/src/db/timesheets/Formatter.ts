@@ -4,7 +4,7 @@ import * as constants from 'src/constants'
 import { v4 as uuidv4 } from 'uuid';
 
 import {UserTimesheets, WriteEntryToTable} from 'src/dynamodb'
-import { DBToModel } from './FrontendConversions';
+import { DynamoSchemaConverter } from './FrontendConversions';
 
 const moment = require('moment-timezone'); 
 
@@ -23,10 +23,10 @@ export class Formatter {
         timesheets = this.format(timesheets); 
         
 
-        return DBToModel.convertTimesheets(timesheets); 
+        return DynamoSchemaConverter.convertDbTimesheets(timesheets); 
     }
 
-    // Formats a list of backend / database timesheets to the frontend equivalents.   
+    // Formats a list of backend / database timesheets to the frontend equivalents. TODO: That isn't what this does - should fix
     public static format(timesheets: timesheetSchemas.DynamoTimesheetSchema[]) : timesheetSchemas.DynamoTimesheetSchema[] {
         const updatedTimesheets =  timesheets.map((timesheet) => {
             const [updatedTimesheet, modified] =  this.validate(timesheet); 
@@ -37,7 +37,6 @@ export class Formatter {
             return updatedTimesheet; 
         })
         return updatedTimesheets
-        
     }
 
     // Main method all other future methods delegate to / would return to when we are processing a timesheet to convert to frontend 
@@ -74,7 +73,7 @@ export class Formatter {
         }
         //Returns the updated timesheet and whether or not it was modified 
         return [
-            timesheetSchemas.TimesheetSchema.parse(
+            timesheetSchemas.DynamoTimesheetSchema.parse(
             {...timesheet, 
                 HoursData: updatedRows 
             }
@@ -83,7 +82,7 @@ export class Formatter {
     }
     //Creates an empty row in the timesheet for a specified date. 
     private static createEmptyRow(date: number): timesheetSchemas.DynamoShiftSchema {
-        return timesheetSchemas.ShiftSchema.parse({
+        return timesheetSchemas.DynamoShiftSchema.parse({
             Type: timesheetSchemas.DynamoCellType.REGULAR, 
             EntryID: uuidv4(), 
             Date: date, 

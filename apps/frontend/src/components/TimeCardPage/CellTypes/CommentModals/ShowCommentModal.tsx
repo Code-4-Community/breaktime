@@ -36,8 +36,8 @@ import {
   DeleteIcon
 } from "@chakra-ui/icons";
 
-import { CommentSchema } from "../../../../schemas/RowSchema";
-import { CommentType, CellStatus, Color } from "../../types";
+import { Color } from "../../types";
+import { CommentType, CellStatus, CommentSchema } from "@org/schemas"
 import { getAllActiveCommentsOfType, createNewComment } from "../../utils";
 import apiClient from "src/components/Auth/apiClient";
 import { createToast } from "../../utils";

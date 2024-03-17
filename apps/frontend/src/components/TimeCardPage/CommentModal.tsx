@@ -13,8 +13,7 @@ import {
   Select
 } from "@chakra-ui/react";
 import React, { useState, useContext } from "react";
-import { CommentType } from "./types";
-import { CommentSchema } from "src/schemas/RowSchema";
+import { CommentType, CommentSchema } from "@org/schemas";
 import { createNewComment } from "./utils";
 import { UserContext } from "./UserContext";
 

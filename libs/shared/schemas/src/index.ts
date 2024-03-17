@@ -1,6 +1,4 @@
-export * as Types from './lib/CellTypes';
-export * as TimesheetSchemas from './lib/TimesheetRow';
-export *  as OperationRequests from './lib/UpdateTimesheet';
-export * as UserSchemas from './lib/UserSchema';
-
-
+export * from './lib/CellTypes';
+export * from './lib/TimesheetRow';
+export * from './lib/UpdateTimesheet';
+export * from './lib/UserSchema';

@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Stack } from "@chakra-ui/react";
 
 import { UserContext } from "../UserContext";
-import { CommentSchema, ReportSchema } from "../../../schemas/RowSchema";
-import { CommentType } from "../types";
+import { CommentType, CommentSchema, ReportSchema } from "@org/schemas";
 import { getAllActiveCommentsOfType } from "../utils";
 
 import ShowCommentModal from "./CommentModals/ShowCommentModal";
@@ -15,11 +14,7 @@ interface CommentProps {
   timesheetID: number;
 }
 
-export function CommentCell({
-  comments,
-  date,
-  timesheetID
-}: CommentProps) {
+export function CommentCell({ comments, date, timesheetID }: CommentProps) {
   const [currentComments, setCurrentComments] = useState(
     getAllActiveCommentsOfType(CommentType.Comment, comments)
   );
@@ -37,7 +32,7 @@ export function CommentCell({
   }, [user?.Type]);
 
   return (
-    <Stack direction='row'>
+    <Stack direction="row">
       <ShowCommentModal
         setComments={setCurrentComments}
         comments={currentComments}
