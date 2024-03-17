@@ -218,25 +218,36 @@ export default function Page() {
   const [weeklyReports, setWeeklyReports] = useState<CommentSchema[]>([]);
 
   // this hook should always run first
+  // TODO: ensure all state variables have local variables
+  // TODO: add 'await' before getCurrentUser()??
   useEffect(() => {
+    var currUser;
     // Get the current logged in user
     getCurrentUser().then((currentUser) => {
       console.log("Current user: ", currentUser);
-      setUser(currentUser);
+      currUser = currentUser;
+      setUser(currUser);
+
+      apiClient.getUser(currUser.UserID).then((userInfo) => {
+        if (userInfo.Type === "Supervisor" || userInfo.Type === "Admin") {
+          apiClient.getAllUsers().then((users) => {
+            setAssociates(users);
+            setSelectedUser(users[0]);
+          });
+        }
+
+        setSelectedUser(userInfo);
+      });
+
     });
 
-    apiClient.getUser().then((userInfo) => {
-      if (userInfo.Type === "Supervisor" || userInfo.Type === "Admin") {
-        apiClient.getAllUsers().then((users) => {
-          setAssociates(users);
-          setSelectedUser(users[0]);
-        });
-      }
-      setSelectedUser(userInfo);
-    });
+   
     // if employee setSelectedUSer to be userinfo
     // if supervisor/admin get all users
     // set selected user
+
+   
+
   }, []);
 
   const getUpdatedTimesheet = (userId) => {
