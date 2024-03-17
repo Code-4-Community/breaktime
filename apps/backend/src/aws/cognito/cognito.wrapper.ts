@@ -47,25 +47,27 @@ export class CognitoWrapper {
 
       // Loop through all roles (aka Cognito groups) to get the user data in that group
       // A user can only ever be in one group, so there should be no duplicate users
-      var userData = []
+      var userData = [];
 
-      const groups = Object.values(CognitoRoles)
+      const groups = Object.values(CognitoRoles);
       for (let role of groups) {
-        console.log(role)
-        console.log("Getting users in group %s", role)
-        const usersInGroup = await this.listUsersInGroup(this.userPoolId, role)
+        console.log(role);
+        console.log("Getting users in group %s", role);
+        const usersInGroup = await this.listUsersInGroup(this.userPoolId, role);
 
         if (userData == null) {
-          throw new Error("Issue with retrieving user data from user pool for group.");
+          throw new Error(
+            "Issue with retrieving user data from user pool for group."
+          );
         }
 
         // Parse each user into a CognitoUser object, and set their group attribute
-        const modifiedUsers = usersInGroup.map((user) => { 
+        const modifiedUsers = usersInGroup.map((user) => {
           const parsedUser = CognitoUser.parse(user);
-          parsedUser.Attributes.push({Name: "cognito:groups", Value: role});
+          parsedUser.Attributes.push({ Name: "cognito:groups", Value: role });
           return parsedUser;
-        })
-        userData = [...userData, ...modifiedUsers]
+        });
+        userData = [...userData, ...modifiedUsers];
       }
 
       return userData;
@@ -83,12 +85,11 @@ export class CognitoWrapper {
       // Get all users first
       const userData = await this.getUsers();
 
-      return userData
-        .filter((user) =>
-          userIDs.includes(
-            user.Attributes.find((attribute) => (attribute.Name = "sub")).Value
-          )
-        );
+      return userData.filter((user) =>
+        userIDs.includes(
+          user.Attributes.find((attribute) => (attribute.Name = "sub")).Value
+        )
+      );
     } catch (error) {
       console.log(error);
       return [];
@@ -120,13 +121,17 @@ export class CognitoWrapper {
    * Gets a list of raw user data from a specified Cognito user pool for the given group, with maximum of 'limit' users.
    * If an error occurs, log the error and return an empty list.
    */
-  async listUsersInGroup(userPoolId: string, groupName: string, limit?: number) {
+  async listUsersInGroup(
+    userPoolId: string,
+    groupName: string,
+    limit?: number
+  ) {
     try {
       const command = new ListUsersInGroupCommand({
         UserPoolId: userPoolId,
         GroupName: groupName,
         Limit: limit,
-      })
+      });
 
       return this.serviceProvider.send(command).then((data) => data.Users);
     } catch (error) {

@@ -1,7 +1,18 @@
-import React, { useState } from 'react';
-import { Card, CardHeader, CardBody, Alert, Image, Button, Icon, Flex, VStack, Spacer } from '@chakra-ui/react';
-import { DEFAULT_COLORS } from 'src/constants';
-import { TfiAnnouncement } from 'react-icons/tfi';
+import React, { useState } from "react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Alert,
+  Image,
+  Button,
+  Icon,
+  Flex,
+  VStack,
+  Spacer,
+} from "@chakra-ui/react";
+import { DEFAULT_COLORS } from "src/constants";
+import { TfiAnnouncement } from "react-icons/tfi";
 
 const SAMPLE_EVENT_LIST = [
   {
@@ -29,26 +40,42 @@ export default function Announcements() {
   // };
 
   return (
-    <Flex gridArea={'Announcements'}>
-      <Card width={'100%'} rounded={'lg'}>
-        <CardHeader as='h5' backgroundColor={DEFAULT_COLORS.BREAKTIME_BLUE} color={DEFAULT_COLORS.WHITE} rounded={'lg'}>
-          <Flex gap={'1%'}>
+    <Flex gridArea={"Announcements"}>
+      <Card width={"100%"} rounded={"lg"}>
+        <CardHeader
+          as="h5"
+          backgroundColor={DEFAULT_COLORS.BREAKTIME_BLUE}
+          color={DEFAULT_COLORS.WHITE}
+          rounded={"lg"}
+        >
+          <Flex gap={"1%"}>
             <Icon as={TfiAnnouncement} />
             Announcements
-          </Flex >
+          </Flex>
         </CardHeader>
         <CardBody>
-          {events[0] ?
+          {events[0] ? (
             <VStack>
               {events.map((event, index) => (
-                <Alert key={index} display={'flex'} gap={'1%'} alignItems={'center'} rounded={'lg'}>
-                  <Image src={event.photo} width={'10%'} />
+                <Alert
+                  key={index}
+                  display={"flex"}
+                  gap={"1%"}
+                  alignItems={"center"}
+                  rounded={"lg"}
+                >
+                  <Image src={event.photo} width={"10%"} />
                   {`${event.date}: ${event.name}`}
                   <Spacer />
-                  <Button as='a' href={event.url} target='_blank'>Register</Button>
-                </Alert>))}
+                  <Button as="a" href={event.url} target="_blank">
+                    Register
+                  </Button>
+                </Alert>
+              ))}
             </VStack>
-            : 'No announcements'}
+          ) : (
+            "No announcements"
+          )}
         </CardBody>
       </Card>
     </Flex>

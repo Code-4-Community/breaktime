@@ -39,11 +39,7 @@ export const TimeEntrySchema = z.object({
  * SubmittedDate reflects the time of last submission, whether from associate, supervisor, or admin.
  */
 export const StatusSchema = z.object({
-  StatusType: z.enum([
-    "HoursSubmitted",
-    "HoursReviewed",
-    "Finalized",
-  ]),
+  StatusType: z.enum(["HoursSubmitted", "HoursReviewed", "Finalized"]),
   SubmittedDateTime: z.number(),
 });
 
@@ -74,7 +70,7 @@ export const TimeSheetSchema = z.object({
 export type TimeSheetSchema = z.infer<typeof TimeSheetSchema>;
 
 export enum TimesheetStatus {
-  HOURS_SUBMITTED="HoursSubmitted",
-  HOURS_REVIEWED="HoursReviewed",
-  FINALIZED="Finalized"
+  HOURS_SUBMITTED = "HoursSubmitted",
+  HOURS_REVIEWED = "HoursReviewed",
+  FINALIZED = "Finalized",
 }

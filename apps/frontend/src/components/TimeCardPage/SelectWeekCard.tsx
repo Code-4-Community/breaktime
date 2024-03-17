@@ -3,7 +3,7 @@ import moment from "moment";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { chakra } from '@chakra-ui/react';
+import { chakra } from "@chakra-ui/react";
 
 const Calendar = chakra(DatePicker);
 
@@ -17,18 +17,22 @@ export default function DateCard(props) {
     } else {
       setDate(providedDate.toDate());
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (date !== undefined) {
-      const startOfWeek = moment(date).startOf('week').unix();
+      const startOfWeek = moment(date).startOf("week").unix();
       props.onDateChange(moment.unix(startOfWeek));
     }
-  }, [date])
+  }, [date]);
 
   return (
-    <Calendar selected={date} onChange={(date) => setDate(date)} rounded='md' backgroundColor={'gray.100'} p={'2%'} />
+    <Calendar
+      selected={date}
+      onChange={(date) => setDate(date)}
+      rounded="md"
+      backgroundColor={"gray.100"}
+      p={"2%"}
+    />
   );
 }
-
-

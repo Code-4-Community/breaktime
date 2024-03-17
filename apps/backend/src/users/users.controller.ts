@@ -51,8 +51,8 @@ export class UsersController {
     }
 
     //return this.userService.getUsers(user, companyIds ?? [], roles, userIds);
-    throw new Error("Not implemented.")
-  }  
+    throw new Error("Not implemented.");
+  }
 
   @Get("userById")
   public async getUserById(
@@ -66,7 +66,7 @@ export class UsersController {
         HttpStatus.UNAUTHORIZED
       );
     }
-    
+
     // TODO: Throw error if no users found
     return this.userService.getUsersByIds(requester, userIds)[0];
   }
@@ -84,7 +84,7 @@ export class UsersController {
       );
     }
 
-    return this.userService.getAllUsers()
+    return this.userService.getAllUsers();
   }
 
   @Get("usersById")
