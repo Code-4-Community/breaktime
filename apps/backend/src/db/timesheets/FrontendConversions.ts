@@ -1,5 +1,5 @@
 import * as DynamoSchemas from '../dynamoSchemas/DynamoTimesheet'
-import {CommentSchema, ReportSchema, ShiftSchema, StatusEntry, TimeEntrySchema, TimeSheetSchema} from '@org/schemas';
+import {CommentSchema, ReportSchema, ShiftSchema, StatusEntry, TimeEntrySchema, TimeSheetSchema, CellType} from '@org/schemas';
 
 /*
     Mapper from converting from DynamoDB Timesheet schema to the internal backend/frontend model.
@@ -108,11 +108,11 @@ export class DynamoSchemaConverter {
         }
     
         // Converts a frontend cell type to our database equivalent. 
-        private static toDBType(entryType: Types.CellType): DynamoSchemas.DynamoCellType {
+        private static toDBType(entryType: CellType): DynamoSchemas.DynamoCellType {
             switch (entryType) {
-                case Types.CellType.REGULAR:
+                case CellType.REGULAR:
                     return DynamoSchemas.DynamoCellType.REGULAR; 
-                case Types.CellType.PTO:
+                case CellType.PTO:
                     return DynamoSchemas.DynamoCellType.PTO; 
                 default:
                     return undefined 

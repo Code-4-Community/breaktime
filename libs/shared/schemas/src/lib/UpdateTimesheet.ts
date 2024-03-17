@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NoteSchema, TimesheetEntrySchema } from "./Timesheet-backenddb";
+import { CommentSchema, ReportSchema, ShiftSchema } from "./TimesheetRow";
 import { TimesheetStatus } from "./CellTypes";
 
 /*
@@ -52,7 +52,7 @@ export type DeleteRequest = z.infer<typeof DeleteRequest>
 */
 export const InsertRequest = z.object({
     Type: availableListTypes, 
-    Item: z.union([TimesheetEntrySchema, NoteSchema]), 
+    Item: z.union([ShiftSchema, CommentSchema, ReportSchema]), 
 }) 
 export type InsertRequest = z.infer<typeof InsertRequest> 
 /*
