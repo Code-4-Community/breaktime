@@ -131,6 +131,7 @@ export class frontendEntryConversions {
     // Converts a singular week comment / note from our frontend to database. 
     private static toDBNote(comment: frontendRowTypes.CommentSchema | undefined): dbTimesheetTypes.NoteSchema | undefined {
         if (comment !== undefined) {
+            console.log(comment)
             return dbTimesheetTypes.NoteSchema.parse({
                 Type: comment.Type, 
                 EntryID: comment.UUID, 

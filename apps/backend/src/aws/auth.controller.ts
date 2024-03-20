@@ -33,6 +33,7 @@ export class AuthController {
     const userId = await TokenClient.grabUserID(headers); 
     if (userId) {
       console.log("Update Timesheet Request: Processing")
+      console.log("HIIIIIIII")
       console.log("Request received:")
       console.log(body)
       const result = this.uploadApi.updateTimesheet(body, userId); 

@@ -21,7 +21,7 @@ export class UploadTimesheet {
             request: The request we are processing 
             userid: The user we are processing this for 
         */
-        //Retrieve a specified timesheet 
+        //Retrieve a specified timesheet
         console.log(request)
         const userTimesheets = await UserTimesheets(userid); 
         const selectedTimesheet = userTimesheets.filter((timesheet) => timesheet.TimesheetID === request.TimesheetID)

@@ -13,6 +13,15 @@ import { CompanySchema, UserCompaniesSchema } from './db/schemas/CompanyUsers';
 
 dotenv.config();
 
+if (process.env.AWS_ACCESS_KEY_ID == null) {
+  throw new Error("AWS Access Key not configured");
+}
+if (process.env.AWS_SECRET_ACCESS_KEY == null) {
+  throw new Error("AWS Secret Access Key not configured");
+}
+console.log("key", process.env.AWS_ACCESS_KEY_ID);
+console.log("secret", process.env.AWS_SECRET_ACCESS_KEY!);
+
 const client = new DynamoDB({ region: "us-east-2" });
 
 export async function UserTimesheets(uuid: string): Promise<TimeSheetSchema[]> {

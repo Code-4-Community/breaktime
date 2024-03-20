@@ -10,25 +10,27 @@ import ShowCommentModal from "./CommentModals/ShowCommentModal";
 import ShowReportModal from "./CommentModals/ShowReportModal";
 
 interface CommentProps {
-  updateField: Function
+  updateFields: Function
   comments: CommentSchema[] | undefined;
   date: number;
   timesheetID: number;
   row: RowSchema;
 }
 
-export function CommentCell({
-  updateField,
-  comments,
-  date,
-  timesheetID,
-  row
-}: CommentProps) {
+export function CommentCell(
+//   {
+//   updateField,
+//   comments,
+//   date,
+//   timesheetID,
+//   row
+// }: 
+props: CommentProps) {
   const [currentComments, setCurrentComments] = useState(
-    getAllActiveCommentsOfType(CommentType.Comment, comments)
+    getAllActiveCommentsOfType(CommentType.Comment, props.comments)
   );
   const [reports, setReports] = useState(
-    getAllActiveCommentsOfType(CommentType.Report, comments) as ReportSchema[]
+    getAllActiveCommentsOfType(CommentType.Report, props.comments) as ReportSchema[]
   );
   const [isEditable, setisEditable] = useState(false);
   const user = useContext(UserContext);
@@ -46,16 +48,16 @@ export function CommentCell({
         setComments={setCurrentComments}
         comments={currentComments}
         isEditable={isEditable}
-        timesheetID={timesheetID}
-        row={row}
-        updateField={updateField}
+        timesheetID={props.timesheetID}
+        row={props.row}
+        updateFields={props.updateFields}
       />
       <ShowReportModal
-        date={date}
+        date={props.date}
         setReports={setReports}
         reports={reports}
         isEditable={isEditable}
-        timesheetID={timesheetID}
+        timesheetID={props.timesheetID}
       />
     </Stack>
   );

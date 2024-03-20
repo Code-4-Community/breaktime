@@ -39,11 +39,9 @@ import {
 import { CommentSchema, RowSchema } from "../../../../schemas/RowSchema";
 import { CommentType, CellStatus, Color } from "../../types";
 import { getAllActiveCommentsOfType, createNewComment } from "../../utils";
-import apiClient from "src/components/Auth/apiClient";
-import { createToast } from "../../utils";
 
 const saveEditedComment = (
-  updateField: Function,
+  updateFields: Function,
   row: RowSchema,
   setComments: Function, 
   comments: CommentSchema[], 
@@ -52,22 +50,18 @@ const saveEditedComment = (
   newComment: CommentSchema) => {
   // previous comment edited over so set it to deleted
   prevComment.State = CellStatus.Deleted
-  setComments(getAllActiveCommentsOfType(typeOfComment, [...comments, newComment]));
-  
   var updatedShiftComments = row.Comment; 
   if (updatedShiftComments === undefined) {
       updatedShiftComments = comments;
   }
-
-  updatedShiftComments = setComments([...comments, newComment]);
-  console.log(updatedShiftComments)
-  
+  updatedShiftComments = getAllActiveCommentsOfType(typeOfComment, [...comments, newComment]);
+  setComments(updatedShiftComments);
   //Triggering parent class to update its references here as well 
-  updateField("Comment", updatedShiftComments); 
-};
-
+  updateFields("Comment", updatedShiftComments); 
+  }
+  
 const deleteComment = (
-  updateField: Function,
+  updateFields: Function,
   row: RowSchema,
   onCloseDisplay: Function, 
   setComments: Function, 
@@ -76,7 +70,7 @@ const deleteComment = (
   comment: CommentSchema) => {
   // TODO: add confirmation popup
   comment.State = CellStatus.Deleted
-  setComments(getAllActiveCommentsOfType(typeOfComment, comments));
+
   if (comments.length === 1) {
     onCloseDisplay()
   }
@@ -84,31 +78,23 @@ const deleteComment = (
   if (updatedShiftComments === undefined) {
       updatedShiftComments = comments;
   }
-
-  updatedShiftComments = setComments([...comments, comment]);
-  console.log(updatedShiftComments)
-  
+  updatedShiftComments = (getAllActiveCommentsOfType(typeOfComment, comments));
+  setComments(updatedShiftComments);
   //Triggering parent class to update its references here as well 
-  updateField("Comment", updatedShiftComments); 
+  updateFields("Comment", updatedShiftComments); 
 }
 
 interface ShowCommentModalProps {
     comments: CommentSchema[];
     setComments: Function;
-    updateField: Function,
+    updateFields: Function,
     isEditable: boolean;
     timesheetID: number;
     row: RowSchema;
   }
   
-export default function ShowCommentModal({
-    updateField,
-    comments,
-    setComments,
-    isEditable,
-    timesheetID,
-    row
-  }: ShowCommentModalProps) {
+export default function ShowCommentModal(
+  props: ShowCommentModalProps) {
     const { isOpen: isOpenDisplay, onOpen: onOpenDisplay, onClose: onCloseDisplay } = useDisclosure();
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onClose: onCloseAdd } = useDisclosure();
     const user = useContext(UserContext);
@@ -135,7 +121,7 @@ export default function ShowCommentModal({
       );
     };
   
-    const doCommentsExist = comments.length > 0
+    const doCommentsExist = props.comments.length > 0
   
     // no comments so gray it out
     if (doCommentsExist === false) {
@@ -158,23 +144,23 @@ export default function ShowCommentModal({
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              {comments.map(
+              {props.comments.map(
                 (comment) => (
                   <HStack>
                     {/* add UserDisplay card once pr merged in*/}
                     <Editable
-                      isDisabled={!isEditable}
+                      isDisabled={!props.isEditable}
                       defaultValue={comment.Content}
-                      onSubmit={(value) => saveEditedComment(updateField, row, setComments, comments, CommentType.Comment, comment, createNewComment(user, CommentType.Comment, value))}
+                      onSubmit={(value) => saveEditedComment(props.updateFields, props.row, props.setComments, props.comments, CommentType.Comment, comment, createNewComment(user, CommentType.Comment, value, comment.UUID))}
                     >
                       <EditablePreview />
   
-                      {isEditable && (
+                      {props.isEditable && (
                         <>
                           <Input as={EditableInput} />
                           <HStack>
                             <EditableControls />
-                            <IconButton aria-label="Delete" icon={<DeleteIcon />} onClick={() => deleteComment(updateField, row, onCloseDisplay, setComments, comments, CommentType.Comment, comment)} />
+                            <IconButton aria-label="Delete" icon={<DeleteIcon />} onClick={() => deleteComment(props.updateFields, props.row, onCloseDisplay, props.setComments, props.comments, CommentType.Comment, comment)} />
                           </HStack>
                         </>
                       )}
@@ -202,37 +188,15 @@ export default function ShowCommentModal({
   
       const handleSubmit = () => {
         
-        var updatedShiftComments = row.Comment; 
+        var updatedShiftComments = props.row.Comment; 
         if (updatedShiftComments === undefined) {
-            updatedShiftComments = comments;
+            updatedShiftComments = props.comments;
         }
- 
-        updatedShiftComments = setComments([...comments, createNewComment(user, CommentType.Comment, remark)]);
-        console.log(updatedShiftComments)
-        
+        updatedShiftComments = [...updatedShiftComments, createNewComment(user, CommentType.Comment, remark)];
+        props.setComments(updatedShiftComments);
+
         //Triggering parent class to update its references here as well 
-        updateField("Comment", updatedShiftComments).then((resp) =>
-          {if (resp) { 
-            toast(createToast({position: 'bottom-right',title:'success.', description: "Your report has been saved.", status: "success"}))
-          } else {
-            toast(createToast({
-              position: 'bottom-right',
-              title: 'failed',
-              description: "An error occured. Please try again.",
-              status: 'error',
-              duration: 9000,
-              isClosable: true,
-            }))
-          }} 
-        ).catch((err) => 
-        toast(createToast({
-          position: 'bottom-right',
-          title: 'failed',
-          description: "An error occured. Please try again.",
-          status: 'error',
-          duration: 9000,
-          isClosable: true,
-        })))
+        props.updateFields("Comment", updatedShiftComments)
         onCloseAdd()
       };
   
@@ -278,9 +242,9 @@ export default function ShowCommentModal({
                 aria-label="Report"
                 leftIcon={<ChatIcon />}
                 onClick={onOpenDisplay} >
-                {comments.length}
+                {props.comments.length}
               </Button>
-              {isEditable &&
+              {props.isEditable &&
                 <Button
                   colorScheme={color}
                   aria-label="Add Feedback"
@@ -289,7 +253,7 @@ export default function ShowCommentModal({
               }
             </> :
             <>
-              {isEditable && <Button
+              {props.isEditable && <Button
                 colorScheme={color}
                 aria-label="Report"
                 leftIcon={<ChatIcon />}
@@ -303,4 +267,4 @@ export default function ShowCommentModal({
         <AddCommentModal />
       </>
     );
-  }
+        }
