@@ -94,6 +94,13 @@ export class ApiClient {
   }
 
 
+  // TODO: define return type???
+  // functon that returns company data based on companyId passed in 
+  public async getCompany(companyID: String) {
+    return await this.get("/company/getCompany")
+  }
+
+
   // a function that returns list of multiple users based on list of userIds passed in
   public async getUsers(userIds: String[]): Promise<UserSchema[]> {
     var allUsers;
