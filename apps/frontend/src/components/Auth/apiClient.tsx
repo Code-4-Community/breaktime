@@ -3,6 +3,8 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
+import React, { useState } from "react";
+import { getCurrentUser } from "../Auth/UserUtils";
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -15,6 +17,7 @@ interface ApiClientOptions {
    */
   skipAuth?: boolean;
 }
+
 export class ApiClient {
   private axiosInstance: AxiosInstance;
 
@@ -86,17 +89,52 @@ export class ApiClient {
     return this.get("/auth/timesheet") as Promise<string>;
   }
 
+  // a function that returns list of multiple users based on list of userIds passed in
+  public async getUsers(userIds: String[]): Promise<UserSchema[]> {
+    var allUsers;
+
+    try {
+      allUsers = await Promise.all(
+        userIds.map((userId) => this.getUser(userId))
+      );
+    } catch (e) {
+      console.log(e);
+    }
+
+    return allUsers;
+  }
+
   // TODO: setup endpoint for getting user information
   // all roles -> return UserSchema for the current user that is logged in
-  public async getUser(): Promise<UserSchema> {
-    return {
-      UserID: "abc",
-      FirstName: "john",
-      LastName: "doe",
-      Type: UserTypes.Admin,
-      Picture:
-        "https://imgs.search.brave.com/DZmzoTAPlNT9HUb2ISfyTd_sPZab1hG4VcyupoK2gwE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAwLzYxLzU0LzA4/LzM2MF9GXzYxNTQw/ODU1X3lFYmIwTlRr/d3ZJVzdaZG1KeThM/aHU1WHJPMXlweURl/LmpwZw",
-    };
+  public async getUser(UserID: String): Promise<UserSchema> {
+    const userId = UserID;
+
+    var userConverted = {};
+
+    try {
+      await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
+        var userType = {};
+
+        // set current user's type
+        if (userList[0].Type === "breaktime-associate") {
+          userType = UserTypes.Associate;
+        } else {
+          userType = UserTypes.Supervisor;
+        }
+
+        // create current user
+        userConverted = {
+          UserID: userList[0].userID,
+          FirstName: userList[0].firstName,
+          LastName: userList[0].lastName,
+          Type: userType,
+        };
+      });
+    } catch (e) {
+      console.log(e);
+    }
+
+    return userConverted;
   }
 
   //TODO: hook up to backend, izzys pr has it just not merged yet
