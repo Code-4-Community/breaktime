@@ -86,7 +86,6 @@ export class frontendEntryConversions {
     switch (body.Type) {
       case requestSchemas.TimesheetListItems.TABLEDATA:
         const convertedKey = this.hoursDataMappings[body.Attribute].finalKey;
-        console.log(convertedKey);
         const convertedValue = this.hoursDataMappings[
           body.Attribute
         ].conversionFn(body.Data);

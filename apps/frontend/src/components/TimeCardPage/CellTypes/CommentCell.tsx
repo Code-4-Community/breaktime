@@ -26,7 +26,15 @@ export function CommentCell({
     getAllActiveCommentsOfType(CommentType.Comment, comments)
   );
   const [reports, setReports] = useState(
-    getAllActiveCommentsOfType(CommentType.Report, comments) as ReportSchema[]
+    getAllActiveCommentsOfType(CommentType.Report, comments).map((comment) => ({
+      AuthorID: comment.AuthorID,
+      Type: comment.Type,
+      Content: comment.Content.split(",")[0],
+      Notified: comment.Content.split(",")[1],
+      Explanation: comment.Content.split(",")[2],
+      State: comment.State,
+      Timestamp: comment.Timestamp,
+    })) as ReportSchema[]
   );
   const [isEditable, setisEditable] = useState(false);
   const user = useContext(UserContext);
@@ -40,7 +48,17 @@ export function CommentCell({
 
   const updateReports = (updatedReports: ReportSchema[]) => {
     setReports(updatedReports);
-    updateComments("Comment", currentComments.concat(updatedReports));
+
+    const reportsToComments = updatedReports.map((report) => ({
+      UUID: report.AuthorID,
+      AuthorID: report.AuthorID,
+      Type: report.Type,
+      Timestamp: report.Timestamp,
+      Content: `${report.Content},${report.Notified},${report.Explanation}`,
+      State: report.State,
+    })) as CommentSchema[];
+
+    updateComments("Comment", currentComments.concat(reportsToComments));
   };
 
   return (

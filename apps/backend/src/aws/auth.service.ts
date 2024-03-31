@@ -21,7 +21,11 @@ export class AuthService {
       console.log(
         "Testing environment - mock user will be used, authentication skipped"
       );
-      return { isValidated: true, groups: mockSupervisor["cognito:groups"], sub: mockSupervisor.sub };
+      return {
+        isValidated: true,
+        groups: mockSupervisor["cognito:groups"],
+        sub: mockSupervisor.sub,
+      };
     }
     try {
       const userPayload = await this.cognitoService.validate(jwt);

@@ -101,13 +101,6 @@ export default function ShowReportModal({
 
   const color = doReportsExist ? Color.Red : Color.Gray;
 
-  // for (const report in reports) {
-  //   const contents = report["Content"].split(",");
-  //   report["Content"] = contents[0];
-  //   report["Notified"] = contents[1];
-  //   report["Explanation"] = contents[2];
-  // }
-
   const DisplayReportsModal = () => {
     return (
       <Modal isOpen={isOpenDisplay} onClose={onCloseDisplay} isCentered>
