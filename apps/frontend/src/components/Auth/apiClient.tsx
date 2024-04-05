@@ -5,6 +5,7 @@ import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
 import React, { useState } from 'react';
 import { getCurrentUser } from "../Auth/UserUtils";
+import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers"
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -17,6 +18,11 @@ interface ApiClientOptions {
    */
   skipAuth?: boolean;
 }
+
+// const cors = require('cors');
+// app.use(cors({
+//   origin: 'https://your-web-app.com'
+// }));
 
 
 
@@ -93,13 +99,15 @@ export class ApiClient {
     return this.get("/auth/timesheet") as Promise<string>;
   }
 
-
-  // TODO: define return type???
   // functon that returns company data based on companyId passed in 
-  public async getCompany(companyID: String) {
-    return await this.get("/company/getCompany")
+  public async getCompany(companyID: String): Promise<CompanySchema> {
+    try {
+      return await this.get(`/company/companyInfo?companyId=${companyID}`)
+    }
+    catch (e) {
+      console.log(e)
+    }
   }
-
 
   // a function that returns list of multiple users based on list of userIds passed in
   public async getUsers(userIds: String[]): Promise<UserSchema[]> {

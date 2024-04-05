@@ -14,12 +14,14 @@ import { User } from "src/utils/decorators/user.decorator";
 
 import { CompanyService } from "./company.service";
 import { CompanyModel } from "./Company.model";
+import { RolesGuard } from "src/utils/guards/roles.guard";
 
 @Controller("company")
+@UseGuards(RolesGuard)
 export class CompanyController {
     constructor(private companyService: CompanyService) {}
 
-    @Get("getCompany")
+    @Get("companyInfo")
     public async getCompany(
         @Headers() headers: any,
         @User() user: ValidatedUser,
@@ -33,7 +35,6 @@ export class CompanyController {
         }
 
         return this.companyService.getCompany(companyId);
-        // throw new Error("Not implemented.")
     }  
 
 

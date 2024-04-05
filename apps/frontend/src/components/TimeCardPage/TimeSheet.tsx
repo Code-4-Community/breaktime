@@ -5,6 +5,7 @@ import SubmitCard from "./SubmitCard";
 import DateSelectorCard from "./SelectWeekCard";
 import { UserContext } from "./UserContext";
 import { getCurrentUser } from "../Auth/UserUtils";
+import {GetCompanyData} from "../../../../backend/src/dynamodb"
 
 import {
   Alert,
