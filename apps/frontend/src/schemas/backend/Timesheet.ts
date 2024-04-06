@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { late, z } from "zod";
 
 /*
 -------------------------------------------------------------------------------------------------------------------
@@ -53,6 +53,20 @@ export enum CellType {
   PTO = "PTO"
 }
 
+/* 
+  Supported type of attandance for each row in a timesheet 
+    @ABSENT - Employee did not attend their shift
+    @ON_TIME - Employee was on time for their shift
+    @LATE - Employee was late for their shif
+    @EARLY - Employee was early for their shift
+*/
+export enum AttendanceType {
+  ABSENT = "Absent", 
+  ON_TIME = "On time",
+  LATE = "Late",
+  EARLY = "Early"
+}
+
 /**
  * Represents the database schema for a single shift or entry in the weekly timesheet. 
  */
@@ -64,6 +78,10 @@ export const TimesheetEntrySchema = z.object({
   SupervisorTimes: TimeEntrySchema.optional(),
   AdminTimes: TimeEntrySchema.optional(),
   Note: z.array(NoteSchema).optional(),
+  Attendance: z.enum([AttendanceType.ABSENT, 
+    AttendanceType.ON_TIME, 
+    AttendanceType.LATE, 
+    AttendanceType.EARLY]).optional()
 })
 
 
