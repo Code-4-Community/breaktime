@@ -13,6 +13,7 @@
   },
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.549.0",
     "@swc/helpers": "~0.5.2",
     "react": "18.2.0",
     "react-dom": "18.2.0"
