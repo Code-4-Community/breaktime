@@ -47,5 +47,5 @@ export const getCurrentUser = async function (): Promise<UserSchema> {
   console.log(cognitoCurrentUser);
   const currUser = CognitoUser.parse(cognitoCurrentUser);
 
-  return await apiClient.getUser(currUser.attributes.sub)
+  return await apiClient.getUser(currUser.attributes.sub);
 };

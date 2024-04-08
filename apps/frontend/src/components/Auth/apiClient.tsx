@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { getCurrentUser } from "../Auth/UserUtils";
 
 const defaultBaseUrl =
@@ -18,11 +18,7 @@ interface ApiClientOptions {
   skipAuth?: boolean;
 }
 
-
-
-
-export class ApiClient { 
-  
+export class ApiClient {
   private axiosInstance: AxiosInstance;
 
   constructor(
@@ -93,40 +89,37 @@ export class ApiClient {
     return this.get("/auth/timesheet") as Promise<string>;
   }
 
-
   // a function that returns list of multiple users based on list of userIds passed in
   public async getUsers(userIds: String[]): Promise<UserSchema[]> {
     var allUsers;
 
     try {
-      allUsers = await Promise.all(userIds.map(userId => this.getUser(userId)));
-    }
-    catch (e) {
-      console.log(e)
+      allUsers = await Promise.all(
+        userIds.map((userId) => this.getUser(userId))
+      );
+    } catch (e) {
+      console.log(e);
     }
 
-    return allUsers
+    return allUsers;
   }
 
-  
   // TODO: setup endpoint for getting user information
   // all roles -> return UserSchema for the current user that is logged in
   public async getUser(UserID: String): Promise<UserSchema> {
-    const userId = UserID
+    const userId = UserID;
 
-    var userConverted = {}
+    var userConverted = {};
 
     try {
       await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
-
-        var userType = {}
+        var userType = {};
 
         // set current user's type
-        if (userList[0].Type === 'breaktime-associate') {
-          userType = UserTypes.Associate
-        }
-        else {
-          userType = UserTypes.Supervisor
+        if (userList[0].Type === "breaktime-associate") {
+          userType = UserTypes.Associate;
+        } else {
+          userType = UserTypes.Supervisor;
         }
 
         // create current user
@@ -134,19 +127,14 @@ export class ApiClient {
           UserID: userList[0].userID,
           FirstName: userList[0].firstName,
           LastName: userList[0].lastName,
-          Type: userType
+          Type: userType,
         };
-
-      })
+      });
+    } catch (e) {
+      console.log(e);
     }
 
-    catch (e) {
-      console.log(e)
-    }
-
-  
-    return userConverted
-
+    return userConverted;
   }
 
   //TODO: hook up to backend, izzys pr has it just not merged yet

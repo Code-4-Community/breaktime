@@ -8,8 +8,8 @@ import {
 import { unmarshall, marshall } from "@aws-sdk/util-dynamodb";
 import * as dotenv from "dotenv";
 
-import {TimeSheetSchema} from './db/schemas/Timesheet'
-import { CompanySchema, UserCompaniesSchema } from './db/schemas/CompanyUsers';
+import { TimeSheetSchema } from "./db/schemas/Timesheet";
+import { CompanySchema, UserCompaniesSchema } from "./db/schemas/CompanyUsers";
 
 dotenv.config();
 
@@ -128,19 +128,19 @@ export async function GetCompanyData(
   return companyData[0];
 }
 
-export async function WriteEntryToTable(table:TimeSheetSchema): Promise<Boolean> {
+export async function WriteEntryToTable(
+  table: TimeSheetSchema
+): Promise<Boolean> {
   const options = {
-    removeUndefinedValues: true
+    removeUndefinedValues: true,
   };
 
   const params = {
-    TableName: 'BreaktimeTimesheets',
-    Item: marshall(table, options), 
-    removeUndefinedValues: true, 
-  }; 
+    TableName: "BreaktimeTimesheets",
+    Item: marshall(table, options),
+    removeUndefinedValues: true,
+  };
 
-  
-  
   try {
     //Input validation - if this fails we do not upload following this as it did not have appropriate types
     TimeSheetSchema.parse(table);
