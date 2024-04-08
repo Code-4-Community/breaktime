@@ -78,10 +78,11 @@ export const TimesheetEntrySchema = z.object({
   SupervisorTimes: TimeEntrySchema.optional(),
   AdminTimes: TimeEntrySchema.optional(),
   Note: z.array(NoteSchema).optional(),
-  Attendance: z.enum([AttendanceType.ABSENT, 
+  Attendance: z.array(z.enum([
+    AttendanceType.ABSENT, 
     AttendanceType.ON_TIME, 
     AttendanceType.LATE, 
-    AttendanceType.EARLY]).optional()
+    AttendanceType.EARLY])).optional()
 })
 
 
