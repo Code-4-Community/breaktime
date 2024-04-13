@@ -13,8 +13,8 @@ const moment = require("moment-timezone");
 Utils file used in testing to upload entire timesheets 
 */
 
-const TIMEZONE = "America/New_York";
-const UUID = "4c8c5ad4-a8ab-4c92-b33f-b8f932b9e0b5";
+const TIMEZONE = "America/New_York"; 
+const UUID = "f4e43e22-2be3-4945-83f0-c961655e90e8"
 
 function createTimeEntry(start, end) {
   return TimeEntrySchema.parse({

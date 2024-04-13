@@ -4,6 +4,7 @@ import { UserSchema } from "src/schemas/UserSchema";
 // TODO: Below code is primarily pulled from backend files (User.client.ts and user.service.ts). This should be moved to a shared folder
 import { z } from "zod";
 import { UserTypes } from "../TimeCardPage/types";
+import apiClient from "./apiClient";
 
 /**
  * The client schema of a Cognito attribute.
@@ -45,6 +46,6 @@ export const getCurrentUser = async function (): Promise<UserSchema> {
   const cognitoCurrentUser = await Auth.currentUserInfo();
   console.log(cognitoCurrentUser);
   const currUser = CognitoUser.parse(cognitoCurrentUser);
-  //TODO: Also make a call to apiClient.getUser() to get the group for this user
-  return convertCognitoUser(currUser);
+
+  return await apiClient.getUser(currUser.attributes.sub)
 };
