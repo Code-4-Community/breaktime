@@ -105,7 +105,7 @@ export class ApiClient {
       return await this.get(`/company/companyInfo?companyId=${companyID}`)
     }
     catch (e) {
-      console.log(e)
+      throw new Error("Unable to get company data")
     }
   }
 
@@ -117,7 +117,7 @@ export class ApiClient {
       allUsers = await Promise.all(userIds.map(userId => this.getUser(userId)));
     }
     catch (e) {
-      console.log(e)
+      throw new Error("Unable to get user data")
     }
 
     return allUsers
@@ -156,7 +156,7 @@ export class ApiClient {
     }
 
     catch (e) {
-      console.log(e)
+      throw new Error("Unable to get user data")
     }
 
   

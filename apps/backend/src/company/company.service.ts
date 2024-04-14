@@ -17,7 +17,7 @@ export class CompanyService {
             return await GetCompanyData(companyId) as Promise<CompanyModel>
         }  
         catch(e) {
-            console.log(e)
+            throw new Error("Unable to get company data")
         }
 
     }
