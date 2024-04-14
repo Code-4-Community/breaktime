@@ -5,6 +5,7 @@ import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
 import React, { useState } from 'react';
 import { getCurrentUser } from "../Auth/UserUtils";
+import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers"
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -17,6 +18,11 @@ interface ApiClientOptions {
    */
   skipAuth?: boolean;
 }
+
+// const cors = require('cors');
+// app.use(cors({
+//   origin: 'https://your-web-app.com'
+// }));
 
 
 
@@ -93,6 +99,15 @@ export class ApiClient {
     return this.get("/auth/timesheet") as Promise<string>;
   }
 
+  // functon that returns company data based on companyId passed in 
+  public async getCompany(companyID: String): Promise<CompanySchema> {
+    try {
+      return await this.get(`/company/companyInfo?companyId=${companyID}`)
+    }
+    catch (e) {
+      throw new Error("Unable to get company data")
+    }
+  }
 
   // a function that returns list of multiple users based on list of userIds passed in
   public async getUsers(userIds: String[]): Promise<UserSchema[]> {
@@ -102,7 +117,7 @@ export class ApiClient {
       allUsers = await Promise.all(userIds.map(userId => this.getUser(userId)));
     }
     catch (e) {
-      console.log(e)
+      throw new Error("Unable to get user data")
     }
 
     return allUsers
@@ -141,7 +156,7 @@ export class ApiClient {
     }
 
     catch (e) {
-      console.log(e)
+      throw new Error("Unable to get user data")
     }
 
   
