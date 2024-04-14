@@ -240,7 +240,6 @@ export class NotesOperations implements ItemsOperations {
 
   public Update(timesheet: TimeSheetSchema, body: UpdateRequest) {
     //TODO - Add in functionality to trigger insert instead of update if ID does not yet exist
-
     return {
       ...timesheet,
       WeekNotes: timesheet.WeekNotes.map((note) => {

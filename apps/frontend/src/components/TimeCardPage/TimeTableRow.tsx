@@ -72,6 +72,7 @@ function Row(props: RowProps) {
           date={fields.Date}
           comments={fields.Comment}
           timesheetID={props.TimesheetID}
+          updateComments={updateField}
         />
       ),
     };

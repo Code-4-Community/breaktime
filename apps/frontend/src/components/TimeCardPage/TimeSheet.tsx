@@ -241,16 +241,11 @@ export default function Page() {
 
         setSelectedUser(userInfo);
       });
-
     });
 
-   
     // if employee setSelectedUSer to be userinfo
     // if supervisor/admin get all users
     // set selected user
-
-   
-
   }, []);
 
   const getUpdatedTimesheet = (userId) => {

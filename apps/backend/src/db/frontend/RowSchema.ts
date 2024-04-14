@@ -3,7 +3,13 @@
 //////////////////////////////////////////////////////////////////////////
 
 import { z } from "zod";
-import { CellType, CommentType, Review_Stages, CellStatus } from "./CellTypes";
+import {
+  CellType,
+  CommentType,
+  ReportOptions,
+  Review_Stages,
+  CellStatus,
+} from "./CellTypes";
 
 const optionalNumber = z.union([z.undefined(), z.number()]);
 const optionalString = z.union([z.undefined(), z.string()]);
@@ -29,6 +35,19 @@ export const CommentSchema = z.object({
 
 export type CommentSchema = z.infer<typeof CommentSchema>;
 
+export const ReportSchema = z.object({
+  AuthorID: z.string(),
+  Timestamp: z.number(),
+  Type: z.nativeEnum(CommentType),
+  CorrectTime: z.number(),
+  Content: z.nativeEnum(ReportOptions),
+  Notified: z.string(),
+  Explanation: z.string(),
+  State: z.nativeEnum(CellStatus),
+});
+
+export type ReportSchema = z.infer<typeof ReportSchema>;
+
 export const RowType = z.enum([CellType.Regular, CellType.PTO]);
 export type RowType = z.infer<typeof RowType>;
 
@@ -41,6 +60,7 @@ export const RowSchema = z.object({
   Admin: TimeRowEntry,
   Comment: z.union([z.undefined(), z.array(CommentSchema)]),
 });
+
 export type RowSchema = z.infer<typeof RowSchema>;
 
 export const ScheduledRowSchema = z.object({

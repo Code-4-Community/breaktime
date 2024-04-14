@@ -12,6 +12,12 @@ export enum CellStatus {
   Deleted = "Deleted",
 }
 
+export enum ReportOptions {
+  Late = "Late Arrival",
+  LeftEarly = "Early Departure",
+  Absent = "No Show",
+}
+
 export enum CommentType {
   Comment = "Comment",
   Report = "Report",

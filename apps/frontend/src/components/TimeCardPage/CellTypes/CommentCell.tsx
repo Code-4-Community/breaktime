@@ -12,15 +12,29 @@ import ShowReportModal from "./CommentModals/ShowReportModal";
 interface CommentProps {
   comments: CommentSchema[] | undefined;
   date: number;
+  updateComments: Function;
   timesheetID: number;
 }
 
-export function CommentCell({ comments, date, timesheetID }: CommentProps) {
+export function CommentCell({
+  comments,
+  date,
+  updateComments,
+  timesheetID,
+}: CommentProps) {
   const [currentComments, setCurrentComments] = useState(
     getAllActiveCommentsOfType(CommentType.Comment, comments)
   );
   const [reports, setReports] = useState(
-    getAllActiveCommentsOfType(CommentType.Report, comments) as ReportSchema[]
+    getAllActiveCommentsOfType(CommentType.Report, comments).map((comment) => ({
+      AuthorID: comment.AuthorID,
+      Type: comment.Type,
+      Content: comment.Content.split(",")[0],
+      Notified: comment.Content.split(",")[1],
+      Explanation: comment.Content.split(",")[2],
+      State: comment.State,
+      Timestamp: comment.Timestamp,
+    })) as ReportSchema[]
   );
   const [isEditable, setisEditable] = useState(false);
   const user = useContext(UserContext);
@@ -32,6 +46,21 @@ export function CommentCell({ comments, date, timesheetID }: CommentProps) {
     }
   }, [user?.Type]);
 
+  const updateReports = (updatedReports: ReportSchema[]) => {
+    setReports(updatedReports);
+
+    const reportsToComments = updatedReports.map((report) => ({
+      UUID: report.AuthorID,
+      AuthorID: report.AuthorID,
+      Type: report.Type,
+      Timestamp: report.Timestamp,
+      Content: `${report.Content},${report.Notified},${report.Explanation}`,
+      State: report.State,
+    })) as CommentSchema[];
+
+    updateComments("Comment", currentComments.concat(reportsToComments));
+  };
+
   return (
     <Stack direction="row">
       <ShowCommentModal
@@ -42,7 +71,7 @@ export function CommentCell({ comments, date, timesheetID }: CommentProps) {
       />
       <ShowReportModal
         date={date}
-        setReports={setReports}
+        setReports={updateReports}
         reports={reports}
         isEditable={isEditable}
         timesheetID={timesheetID}

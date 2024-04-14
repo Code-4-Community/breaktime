@@ -68,7 +68,6 @@ export class UploadTimesheet {
               selectedTimesheet[0],
               frontendEntryConversions.updateConversion(request.Payload)
             );
-
           break;
         default:
           throw new Error(`Invalid operation: ${request.Operation}`);

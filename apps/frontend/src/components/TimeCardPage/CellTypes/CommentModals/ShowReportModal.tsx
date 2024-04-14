@@ -96,14 +96,10 @@ export default function ShowReportModal({
     onClose: onCloseAdd,
   } = useDisclosure();
   const user = useContext(UserContext);
-  let color = Color.Red;
 
   const doReportsExist = reports.length > 0;
 
-  // no reports so gray it out
-  if (doReportsExist === false) {
-    color = Color.Gray;
-  }
+  const color = doReportsExist ? Color.Red : Color.Gray;
 
   const DisplayReportsModal = () => {
     return (

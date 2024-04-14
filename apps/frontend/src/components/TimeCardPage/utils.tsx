@@ -57,6 +57,6 @@ export const createNewReport = (
     Notified: notified,
     Explanation: explanation,
     State: CellStatus.Active,
-    time: moment().unix(),
+    Timestamp: moment().unix(),
   };
 };
