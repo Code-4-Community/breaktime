@@ -52,14 +52,15 @@ export const RowType = z.enum([CellType.Regular, CellType.PTO]);
 export type RowType = z.infer<typeof RowType>;
 
 export const RowSchema = z.object({
-  Type: z.nativeEnum(CellType),
   UUID: z.string(),
+  Type: RowType,
   Date: z.number(),
   Associate: TimeRowEntry,
   Supervisor: TimeRowEntry,
   Admin: TimeRowEntry,
-  Comment: z.union([z.undefined(), z.array(CommentSchema || ReportSchema)]),
+  Comment: z.union([z.undefined(), z.array(CommentSchema)]),
 });
+
 export type RowSchema = z.infer<typeof RowSchema>;
 
 export const ScheduledRowSchema = z.object({

@@ -3,8 +3,6 @@ import * as dbTimesheetTypes from "../schemas/Timesheet";
 import * as requestSchemas from "../schemas/UpdateTimesheet";
 import { FrontendTimeSheetSchema } from "../frontend/TimesheetSchema";
 import * as frontendTypes from "../frontend/CellTypes";
-import { User } from "src/utils/decorators/user.decorator";
-import { CustomSMSSenderLambdaVersionType } from "@aws-sdk/client-cognito-identity-provider";
 
 /*
     Code for converting from the frontend to our backend equivalents. Useful for actually processing this to be stored in our database / align with what our 
@@ -89,7 +87,6 @@ export class frontendEntryConversions {
         const convertedValue = this.hoursDataMappings[
           body.Attribute
         ].conversionFn(body.Data);
-        console.log(convertedValue);
         return {
           ...body,
           Attribute: convertedKey,
@@ -163,17 +160,9 @@ export class frontendEntryConversions {
 
   // Converts a singular week comment / note from our frontend to database.
   private static toDBNote(
-    note:
-      | frontendRowTypes.CommentSchema
-      | frontendRowTypes.ReportSchema
-      | undefined
+    comment: frontendRowTypes.CommentSchema | undefined
   ): dbTimesheetTypes.NoteSchema | undefined {
-    if (note === undefined) {
-      return note;
-    }
-
-    if (note.Type === frontendTypes.CommentType["Comment"]) {
-      const comment = note as frontendRowTypes.CommentSchema;
+    if (comment !== undefined) {
       return dbTimesheetTypes.NoteSchema.parse({
         Type: comment.Type,
         EntryID: comment.UUID,
@@ -181,16 +170,6 @@ export class frontendEntryConversions {
         DateTime: comment.Timestamp,
         Content: comment.Content,
         State: comment.State,
-      });
-    } else if (note.Type === frontendTypes.CommentType["Report"]) {
-      const report = note as frontendRowTypes.ReportSchema;
-      return dbTimesheetTypes.NoteSchema.parse({
-        Type: report.Type,
-        EntryID: "",
-        AuthorUUID: report.AuthorID,
-        DateTime: 2,
-        Content: `${report.Content},${report.Notified},${report.Explanation}`,
-        State: report.State,
       });
     }
     return undefined;

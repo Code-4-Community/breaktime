@@ -5,26 +5,22 @@ import SubmitCard from "./SubmitCard";
 import DateSelectorCard from "./SelectWeekCard";
 import { UserContext } from "./UserContext";
 import { getCurrentUser } from "../Auth/UserUtils";
-
+import { EvaluationModal } from "./EvaluationModal";
+import { Evaluations } from "./Evaluations";
 import {
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Box,
   IconButton,
   Card,
   CardBody,
   Avatar,
-  Flex,
   Text,
   Tabs,
   TabList,
   Tab,
-  Spacer,
   HStack,
-  VStack,
-  ButtonGroup,
 } from "@chakra-ui/react";
 
 import { TIMESHEET_DURATION, TIMEZONE } from "src/constants";
@@ -34,13 +30,16 @@ import moment, { Moment } from "moment-timezone";
 
 import apiClient from "../Auth/apiClient";
 import AggregationTable from "./AggregationTable";
-import { v4 as uuidv4 } from "uuid";
 import { UserSchema } from "../../schemas/UserSchema";
 
-import { SearchIcon, WarningIcon, DownloadIcon } from "@chakra-ui/icons";
+import {
+  SearchIcon,
+  WarningIcon,
+  DownloadIcon,
+  ChatIcon,
+} from "@chakra-ui/icons";
 import { Select, components } from "chakra-react-select";
-import { TimeSheetSchema } from "src/schemas/TimesheetSchema";
-import { CommentSchema, RowSchema } from "src/schemas/RowSchema";
+import { CommentSchema } from "src/schemas/RowSchema";
 import { getAllActiveCommentsOfType } from "./utils";
 import { Stack } from "react-bootstrap";
 import { Divider } from "@aws-amplify/ui-react";
@@ -146,6 +145,10 @@ function SearchEmployeeTimesheet({ employees, setSelected }) {
 interface WeeklyCommentSectionProps {
   weeklyComments: CommentSchema[];
   weeklyReports: CommentSchema[];
+}
+interface WeeklyEvaluationModalProps {
+  setWeeklyEvaluation: Function;
+  weeklyEvaluation: CommentSchema[];
 }
 
 // TODO: idk if we're keeping up just gonna remove bc doesnt look great atm
@@ -356,6 +359,34 @@ export default function Page() {
 
   // use this to control whether the timesheet is disabled or not
   const disabled = false;
+  const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const updateCommentList = (newCommentList) => {
+    setComments(newCommentList);
+  };
+
+  // set the modal as open
+  const openEvaluationForm = () => {
+    setIsOpenCommentForm(true);
+  };
+
+  // set the modal as closed
+  const closeEvaluationForm = () => {
+    setIsOpenCommentForm(false);
+  };
+
+  // set the comment list based on a given comment and close the form
+  const handleCommentSubmit = (comment: Comment) => {
+    setComments([...comments, comment]);
+    closeEvaluationForm();
+  };
+
+  interface Comment {
+    AuthorID: string;
+    Type: CommentType;
+    Timestamp: number;
+    Content: string;
+  }
 
   return (
     <UserContext.Provider value={user}>
@@ -368,6 +399,25 @@ export default function Page() {
                 employees={associates}
                 setSelected={setSelectedUser}
               />
+
+              <IconButton
+                aria-label="Weekly Comments"
+                icon={<ChatIcon />}
+                onClick={openEvaluationForm}
+                minW="200px"
+              >
+                Weekly Comments
+              </IconButton>
+              {isOpenCommentForm && (
+                <EvaluationModal
+                  isOpen={isOpenCommentForm}
+                  onClose={closeEvaluationForm}
+                  onCommentSubmit={handleCommentSubmit}
+                  onCommentDelete={null}
+                  commentToEdit={null}
+                />
+              )}
+
               <IconButton aria-label="Download" icon={<DownloadIcon />} />
               <IconButton aria-label="Report" icon={<WarningIcon />} />
             </>
@@ -414,6 +464,16 @@ export default function Page() {
               </UserContext.Provider>
             )}
           </fieldset>
+          {
+            <Evaluations
+              commentList={comments}
+              openEvaluationForm={isOpenCommentForm}
+              updateCommentList={updateCommentList}
+              // handleModalOpen={openEvaluationForm}
+              // handleModalClose={closeEvaluationForm}
+              //handleCommentSubmit={handleCommentSubmit}
+            />
+          }
         </div>
       </>
     </UserContext.Provider>

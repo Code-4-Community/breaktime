@@ -58,6 +58,8 @@
     "vitest": "~0.34.6"
   },
   "lint-staged": {
-    "*": "npx nx format:write --files"
+    "*": "npx nx format:write --files",
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
   }
 }
