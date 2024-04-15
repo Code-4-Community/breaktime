@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useTransition } from "react";
 import TimeTable from "./TimeTable";
 import { useEffect } from "react";
 import SubmitCard from "./SubmitCard";
@@ -216,6 +216,7 @@ export default function Page() {
 
   const [weeklyComments, setWeeklyComments] = useState<CommentSchema[]>([]);
   const [weeklyReports, setWeeklyReports] = useState<CommentSchema[]>([]);
+  const [dateToCheck, setDateToCheck] = useState(moment());
 
   // if the timesheet is disabled
   const [disabled, setDisabled] = useState(false);
@@ -301,7 +302,19 @@ export default function Page() {
   const updateDateRange = (date: Moment) => {
     setSelectedDate(date);
 
-    console.log("DATE IS UPDATING  and disabled is ", disabled);
+    user &&
+      apiClient.getUser(user.UserID).then(async (userInfo) => {
+        if (userInfo.Type === "Supervisor") {
+          const dueTimestamp = await apiClient.getSupervisorDueDate();
+          const duedate = moment.unix(dueTimestamp);
+          setDisabled(duedate < moment());
+        }
+        if (userInfo.Type === "Associate") {
+          const AssociateDueDate = await apiClient.getAssociateDueDate();
+          const duedate = moment.unix(AssociateDueDate);
+          setDisabled(duedate < moment());
+        }
+      });
 
     //TODO - Refactor this to use the constant in merge with contants branch
     setCurrentTimesheetsToDisplay(userTimesheets, date);
@@ -336,6 +349,8 @@ export default function Page() {
 
     const dateToCheck = moment(selectedDate);
     dateToCheck.add(TIMESHEET_DURATION, "days");
+
+    // check if current date is after the date to ceck
     if (currentDate.isAfter(dateToCheck, "days")) {
       setDisabled(true);
       console.log("DATE HAS PASSED, ", disabled);
@@ -362,13 +377,6 @@ export default function Page() {
       );
     }
   };
-
-  // use this to control whether the timesheet is disabled or not
-  //let disabled = false;
-
-  // useEffect(() => {
-  //   disabled
-  // }
 
   return (
     <UserContext.Provider value={user}>
