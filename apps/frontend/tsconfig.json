@@ -19,7 +19,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@org/schemas": ["../../libs/shared/schemas/dist/src/index.d.ts"]
+      "@org/schemas": ["../../libs/shared/schemas/src/index.ts"]
     }
   },
   "references": [

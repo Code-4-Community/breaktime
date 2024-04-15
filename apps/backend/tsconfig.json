@@ -11,7 +11,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@org/schemas": ["../../libs/shared/schemas/dist/src/index.d.ts"]
+      "@org/schemas": ["../../libs/shared/schemas/src/index.ts"]
     },
     "incremental": true,
     "skipLibCheck": true,
