@@ -1,4 +1,4 @@
-import { TimesheetOperations, TimesheetUpdateRequest } from "@org/schemas";
+import { TimesheetOperations, TimesheetUpdateRequest } from "../../shared-schemas";
 
 import {UserTimesheets} from "src/dynamodb"
 import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";

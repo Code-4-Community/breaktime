@@ -1,4 +1,4 @@
-import {DeleteRequest, InsertRequest, StatusChangeRequest, TimesheetListItems, UpdateRequest, TimeSheetSchema, CommentSchema, ShiftSchema} from '@org/schemas'
+import {DeleteRequest, InsertRequest, StatusChangeRequest, TimesheetListItems, UpdateRequest, TimeSheetSchema, CommentSchema, ShiftSchema} from '../../shared-schemas'
 //Not sure why but only works if imported like this :| 
 const moment = require('moment-timezone'); 
 

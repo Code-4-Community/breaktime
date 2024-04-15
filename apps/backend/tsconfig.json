@@ -10,9 +10,9 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "paths": {
-      "@org/schemas": ["src/src/index.ts"]
-    },
+    // "paths": {
+    //   "@org/schemas": ["src/shared-schemas/index.ts"]
+    // },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -20,10 +20,5 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  },
-  "references": [
-    {
-      "path": "../../libs/shared/schemas/"
-    }
-  ]
+  }
 }

@@ -1,5 +1,5 @@
 import * as DynamoSchemas from '../dynamoSchemas/DynamoTimesheet'
-import {CommentSchema, ReportSchema, ShiftSchema, StatusEntry, TimeEntrySchema, TimeSheetSchema, CellType} from '@org/schemas';
+import {CommentSchema, ReportSchema, ShiftSchema, StatusEntry, TimeEntrySchema, TimeSheetSchema, CellType} from '../../shared-schemas';
 
 /*
     Mapper from converting from DynamoDB Timesheet schema to the internal backend/frontend model.
