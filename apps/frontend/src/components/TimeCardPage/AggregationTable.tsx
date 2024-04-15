@@ -2,7 +2,7 @@ import { Table, Thead, Tbody, Tfoot, Tr, Th, Td } from "@chakra-ui/react";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import moment, { Moment } from "moment-timezone";
-import { TimeSheetSchema } from "@org/schemas";
+import { TimeSheetSchema } from "src/shared-schemas";
 
 interface AggregationProps {
   Date: Moment;

@@ -1,7 +1,7 @@
 import { Auth } from "aws-amplify";
 import axios, { AxiosInstance } from "axios";
-import { TimeSheetSchema, ReportOptions } from "@org/schemas";
-import { UserSchema } from "@org/schemas";
+import { TimeSheetSchema, ReportOptions } from "src/shared-schemas";
+import { UserSchema } from "src/shared-schemas";
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";

@@ -4,7 +4,7 @@ import {
   CommentSchema,
   UserSchema,
   ReportOptions,
-} from "@org/schemas";
+} from "src/shared-schemas";
 import moment from "moment";
 import { UseToastOptions } from "@chakra-ui/react";
 

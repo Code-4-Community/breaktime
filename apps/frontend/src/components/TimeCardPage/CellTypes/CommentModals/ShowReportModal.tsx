@@ -38,7 +38,7 @@ import {
   CellStatus,
   CommentSchema,
   ReportSchema,
-} from "@org/schemas";
+} from "src/shared-schemas";
 import { getAllActiveCommentsOfType, createNewReport } from "../../utils";
 
 const saveEditedReport = (

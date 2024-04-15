@@ -16,7 +16,7 @@ import {
   TimesheetOperations,
   TimesheetUpdateRequest,
   UpdateRequest,
-} from "@org/schemas";
+} from "src/shared-schemas";
 import ApiClient from "src/components/Auth/apiClient";
 
 interface RowProps {

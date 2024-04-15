@@ -33,7 +33,7 @@ import {
   TABLE_COLUMNS,
   CommentType,
   CommentSchema,
-} from "@org/schemas";
+} from "src/shared-schemas";
 import { getAllActiveCommentsOfType } from "./utils";
 import { Stack } from "react-bootstrap";
 import { Divider } from "@aws-amplify/ui-react";

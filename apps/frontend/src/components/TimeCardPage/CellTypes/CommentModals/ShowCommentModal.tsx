@@ -37,7 +37,7 @@ import {
 } from "@chakra-ui/icons";
 
 import { Color } from "../../types";
-import { CommentType, CellStatus, CommentSchema } from "@org/schemas"
+import { CommentType, CellStatus, CommentSchema } from "src/shared-schemas"
 import { getAllActiveCommentsOfType, createNewComment } from "../../utils";
 import apiClient from "src/components/Auth/apiClient";
 import { createToast } from "../../utils";

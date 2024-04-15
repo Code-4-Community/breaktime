@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Stack } from "@chakra-ui/react";
 
 import { UserContext } from "../UserContext";
-import { CommentType, CommentSchema, ReportSchema } from "@org/schemas";
+import { CommentType, CommentSchema, ReportSchema } from "src/shared-schemas";
 import { getAllActiveCommentsOfType } from "../utils";
 
 import ShowCommentModal from "./CommentModals/ShowCommentModal";

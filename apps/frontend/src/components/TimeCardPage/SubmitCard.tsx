@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { WeeklyCommentModal } from "./CommentModal";
-import {
-  Box,
-  Card,
-  CardBody,
-  CardFooter,
-  Button,
-} from "@chakra-ui/react";
+import { Box, Card, CardBody, CardFooter, Button } from "@chakra-ui/react";
 import { CardState } from "./types";
-import { CommentSchema } from "@org/schemas";
+import { CommentSchema } from "src/shared-schemas";
 
 interface SubmitCardProps {
   setWeeklyComments: Function;

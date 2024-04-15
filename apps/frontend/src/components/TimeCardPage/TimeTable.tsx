@@ -21,7 +21,7 @@ import {
   TimesheetOperations,
   TimesheetUpdateRequest,
   ShiftSchema,
-} from "@org/schemas";
+} from "src/shared-schemas";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import ApiClient from "../Auth/apiClient";
 

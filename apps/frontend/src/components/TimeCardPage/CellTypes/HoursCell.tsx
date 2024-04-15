@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ShiftSchema } from "@org/schemas";
+import { ShiftSchema } from "src/shared-schemas";
 import { Box } from "@chakra-ui/react";
 
 interface DurationProps {
