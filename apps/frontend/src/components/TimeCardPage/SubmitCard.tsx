@@ -35,11 +35,6 @@ export default function SubmitCard(props: submitCardProps) {
    *   any associate, supervisor, or admin that was viewing the timesheet.
    */
   const [cardState, setCardState] = useState(TimesheetStatus.UNSUBMITTED);
-  const [submitDisabled, setSubmitDisabled] = useState(props.submitDisabled);
-
-  // useEffect(()=>{
-
-  // })
 
   // Run whenever there's an update to the current logged in user (i.e. re-render the correct submission status for the user type)
   useEffect(() => {
