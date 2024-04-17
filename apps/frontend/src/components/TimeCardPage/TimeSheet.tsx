@@ -366,8 +366,34 @@ export default function Page() {
     }
   };
 
-  // use this to control whether the timesheet is disabled or not
+  const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const updateCommentList = (newCommentList) => {
+    setComments(newCommentList);
+  };
 
+  // set the modal as open
+  const openEvaluationForm = () => {
+    setIsOpenCommentForm(true);
+  };
+
+  // set the modal as closed
+  const closeEvaluationForm = () => {
+    setIsOpenCommentForm(false);
+  };
+
+  // set the comment list based on a given comment and close the form
+  const handleCommentSubmit = (comment: Comment) => {
+    setComments([...comments, comment]);
+    closeEvaluationForm();
+  };
+
+  interface Comment {
+    AuthorID: string;
+    Type: CommentType;
+    Timestamp: number;
+    Content: string;
+  }
   return (
     <UserContext.Provider value={user}>
       <>
