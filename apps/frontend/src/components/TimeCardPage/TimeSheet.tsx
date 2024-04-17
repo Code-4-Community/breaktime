@@ -197,6 +197,8 @@ export default function Page() {
     moment().startOf("week").day(0)
   );
 
+  const [dueDate, setdueDate] = useState(moment().endOf("week").day(0));
+
   // fetch the information of the user whos timesheet is being displayed
   // if user is an employee selected and user would be the same
   // if user is a supervisor/admin then selected would contain the information of the user
@@ -302,20 +304,6 @@ export default function Page() {
   const updateDateRange = (date: Moment) => {
     setSelectedDate(date);
 
-    user &&
-      apiClient.getUser(user.UserID).then(async (userInfo) => {
-        if (userInfo.Type === "Supervisor") {
-          const dueTimestamp = await apiClient.getSupervisorDueDate();
-          const duedate = moment.unix(dueTimestamp);
-          setDisabled(duedate < moment());
-        }
-        if (userInfo.Type === "Associate") {
-          const AssociateDueDate = await apiClient.getAssociateDueDate();
-          const duedate = moment.unix(AssociateDueDate);
-          setDisabled(duedate < moment());
-        }
-      });
-
     //TODO - Refactor this to use the constant in merge with contants branch
     setCurrentTimesheetsToDisplay(userTimesheets, date);
   };
@@ -342,6 +330,26 @@ export default function Page() {
     if (newCurrentTimesheets.length > 0) {
       changeTimesheet(newCurrentTimesheets[0]);
     }
+
+    console.log("user exists???", user);
+    user &&
+      apiClient.getUser(user.UserID).then(async (userInfo) => {
+        if (userInfo.Type === "Supervisor") {
+          const dueTimestamp = await apiClient.getSupervisorDueDate();
+          const duedate = moment.unix(dueTimestamp);
+          setDisabled(duedate.isBefore(selectedDate));
+          console.log("due date: ", duedate);
+          console.log("selected date: ", selectedDate);
+          console.log("checking this boolean", duedate.isBefore(selectedDate));
+          console.log("setting as disabled for supervisor", disabled);
+        }
+        if (userInfo.Type === "Associate") {
+          const AssociateDueDate = await apiClient.getAssociateDueDate();
+          const duedate = moment.unix(AssociateDueDate);
+          setDisabled(duedate.isBefore(selectedDate));
+          console.log("setting as disabled for associate");
+        }
+      });
   };
 
   const renderWarning = () => {
@@ -350,10 +358,15 @@ export default function Page() {
     const dateToCheck = moment(selectedDate);
     dateToCheck.add(TIMESHEET_DURATION, "days");
 
-    // check if current date is after the date to ceck
-    if (currentDate.isAfter(dateToCheck, "days")) {
+    if (disabled) {
+      //if (dateToCheck.isAfter(dueDate, "days")) {
       setDisabled(true);
       console.log("DATE HAS PASSED, ", disabled);
+      console.log("Comparison, ", dateToCheck.isAfter(dueDate, "days"));
+      console.log("Current day", currentDate);
+      console.log("Date to check", dateToCheck);
+      console.log("Due date is , ", dueDate);
+
       return (
         <Alert status="error">
           <AlertIcon />

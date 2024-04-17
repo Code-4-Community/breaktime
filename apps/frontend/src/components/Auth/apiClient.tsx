@@ -162,7 +162,7 @@ export class ApiClient {
 
   // mock data for testing
   public async getSupervisorDueDate(): Promise<number> {
-    const dueDate: number = 1715822319; // old date example
+    const dueDate: number = 1713394747; // old date example
     return dueDate;
   }
 

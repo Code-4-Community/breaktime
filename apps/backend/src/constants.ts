@@ -1,1 +1,1 @@
-export const TIMESHEET_DURATION = 7 
+export const TIMESHEET_DURATION = 7;
