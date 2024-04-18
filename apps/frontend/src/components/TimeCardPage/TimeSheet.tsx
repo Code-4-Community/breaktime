@@ -437,7 +437,9 @@ export default function Page() {
 
               <IconButton aria-label="Download" icon={<DownloadIcon />} />
               <IconButton aria-label="Report" icon={<WarningIcon />} />
-              <Button onClick={openAttendanceReport}>Attendance</Button>
+              <Button onClick={openAttendanceReport} minW="100px">
+                Attendance
+              </Button>
               {isOpenAttendanceReport && (
                 <AttendanceModal
                   isOpen={isOpenAttendanceReport}

@@ -10,6 +10,8 @@ import {
   RadioGroup,
   Radio,
   Input,
+  Select,
+  HStack,
 } from "@chakra-ui/react";
 import React from "react";
 
@@ -40,14 +42,14 @@ export function AttendanceModal({
   const options = [
     {
       value: "option1",
-      content: "This associate was a total rock star this week!",
+      content: "Default",
     },
-    { value: "option2", content: "This associate did just okay this week" },
+    { value: "option2", content: "Absent" },
     {
       value: "option3",
-      content: "Lack of professionalism and/or poor behavior",
+      content: "Tardy",
     },
-    { value: "option4", content: "N/A" },
+    { value: "option4", content: "Left Early" },
   ];
 
   return (
@@ -56,19 +58,31 @@ export function AttendanceModal({
         <ModalHeader> Weekly Performance Evaluation</ModalHeader>
         <ModalBody>
           {/* <form onSubmit={handleSubmit}> */}
-          <FormLabel>
-            How would you describe this associate's overall work performance
-            this week?
-          </FormLabel>
-          <RadioGroup value={selectedOption}>
-            <Stack spacing={2}>
-              {options.map((option) => (
-                <Radio key={option.value} value={option.value}>
-                  {option.content}
-                </Radio>
-              ))}
-            </Stack>
-          </RadioGroup>
+          <FormLabel>Shifts for week of 04/15/2024</FormLabel>
+          <Stack spacing={2}>
+            {[
+              "04/15/2024",
+              "04/16/2024",
+              "04/17/2024",
+              "04/18/2024",
+              "04/19/2024",
+            ].map((item) => (
+              <>
+                <FormLabel>{item}</FormLabel>
+                <Select>
+                  {options.map((option) => (
+                    <option>{option.content}</option>
+                  ))}
+                </Select>
+              </>
+            ))}
+            <FormLabel>Weekly Attendance Rate: 93%</FormLabel>
+            <FormLabel>Overrall Attendance Rate 95%</FormLabel>
+          </Stack>
+          <HStack>
+            <Button>cancel</Button>
+            <Button colorScheme="blue">submit</Button>
+          </HStack>
           {/* </form> */}
           <ModalCloseButton />
         </ModalBody>
