@@ -141,7 +141,10 @@ export class AuthController {
     @Headers() headers: any,
     @User() user: ValidatedUser
   ) {
-    const jsonData = [{ name: 'Alice', age: 28 }, { name: 'Bob', age: 35 } ];
+    const jsonData = [
+      { shiftType: 'Time Worked', date: '04/07/24', clockIn: '8:00AM', clockOut: '12:00PM', hoursWorked: '4', comments: '', reports: 'Left Early: 11:30AM\nReported by David Levin' },
+      { shiftType: 'Time Worked', date: '04/09/24', clockIn: '9:00AM', clockOut: '1:30PM', hoursWorked: '4', comments: '"Fantastic job handling tasks today"\nDavid Levin\n\n"Swapped shift with John"\nNeeti Desai', reports: '' }
+    ];
 
     const parser = new AsyncParser()
     const csv = await parser.parse(jsonData).promise()
