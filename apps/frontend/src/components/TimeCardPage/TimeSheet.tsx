@@ -366,7 +366,6 @@ export default function Page() {
     }
   };
 
-  const [disabled, setDisabled] = useState(false);
   const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const updateCommentList = (newCommentList) => {
