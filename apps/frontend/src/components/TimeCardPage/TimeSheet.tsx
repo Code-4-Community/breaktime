@@ -200,8 +200,6 @@ export default function Page() {
     moment().startOf("week").day(0)
   );
 
-  const [dueDate, setdueDate] = useState(moment().endOf("week").day(0));
-
   // fetch the information of the user whos timesheet is being displayed
   // if user is an employee selected and user would be the same
   // if user is a supervisor/admin then selected would contain the information of the user
@@ -334,38 +332,38 @@ export default function Page() {
       changeTimesheet(newCurrentTimesheets[0]);
     }
 
-    console.log("user exists???", user);
-    console.log("timesheets exist???", newCurrentTimesheets.length);
-    console.log("timesheets 0 ???", newCurrentTimesheets[0]);
-    //console.log("timehseets 3 ???", newCurrentTimesheets[0].DueDateSupervisor);
+    console.log("timesheet " + newCurrentTimesheets[0]);
 
-    // can remove these checks when mock data is coming in correctly
     // here set the duedate as the corresponding due dates for supervisor/associate
     // set as "disabled" if dueDate.isBefore(selectedDate)
+    let duedate: number;
     user &&
       selectedDate &&
       apiClient.getUser(user.UserID).then(async (userInfo) => {
         if (userInfo.Type === "Supervisor" && newCurrentTimesheets.length > 0) {
-          const duedate = newCurrentTimesheets[0].DueDateSupervisor;
-          //setDisabled(duedate.isBefore(selectedDate));
-          setdueDate(duedate);
-          console.log("due date: ", newCurrentTimesheets[0].DueDateSupervisor);
-          console.log("selected date: ", selectedDate);
-          //console.log("checking this boolean", duedate.isBefore(selectedDate));
-          console.log("setting as disabled for supervisor", disabled);
-        }
-        if (userInfo.Type === "Associate") {
-          const duedate = newCurrentTimesheets[0].DueDateAssociate;
-          //setDisabled(duedate.isBefore(selectedDate));
-          setdueDate(duedate);
+          duedate = newCurrentTimesheets[0].DueDateSupervisor;
+          console.log("setting as disabled for supervisor");
+        } else if (
+          userInfo.Type === "Associate" &&
+          newCurrentTimesheets.length > 0
+        ) {
+          duedate = newCurrentTimesheets[0].DueDateAssociate;
           console.log("setting as disabled for associate");
+        }
+
+        if (duedate !== undefined) {
+          const currentDate = moment();
+          const dueDateMoment = moment.unix(duedate);
+          console.log("current date", currentDate.format());
+          console.log("due date", dueDateMoment.format());
+          const isDisable = currentDate.isAfter(dueDateMoment);
+          console.log("disabling? ", isDisable);
+          setDisabled(isDisable);
         }
       });
   };
 
   const renderWarning = () => {
-    const currentDate = moment();
-
     const dateToCheck = moment(selectedDate);
     dateToCheck.add(TIMESHEET_DURATION, "days");
 

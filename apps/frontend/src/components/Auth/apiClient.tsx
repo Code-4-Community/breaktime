@@ -3,9 +3,6 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
-import React, { useState } from "react";
-import { getCurrentUser } from "../Auth/UserUtils";
-
 import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers";
 
 const defaultBaseUrl =
@@ -82,7 +79,11 @@ export class ApiClient {
 
   // TODO: setup endpoint for associate/supervisor/admin so it returns a list of timesheets for given uuid
   public async getUserTimesheets(UUID: string): Promise<TimeSheetSchema[]> {
-    return this.get("auth/timesheet") as Promise<TimeSheetSchema[]>;
+    let timesheets = (await this.get("auth/timesheet")) as TimeSheetSchema[];
+    return timesheets.map((timesheet) => {
+      console.log("parsed timesheet", TimeSheetSchema.parse(timesheet));
+      return TimeSheetSchema.parse(timesheet);
+    });
   }
 
   public async updateUserTimesheet(updatedEntry): Promise<Boolean> {
@@ -135,7 +136,10 @@ export class ApiClient {
         console.log("userlist", userList);
 
         // set current user's type
-        if (userList[0].Type === "breaktime-associate") {
+        if (
+          userList[0].Type === "breaktime-associate" ||
+          userList[0].userRole === "breaktime-associate"
+        ) {
           userType = UserTypes.Associate;
         } else {
           userType = UserTypes.Supervisor;
