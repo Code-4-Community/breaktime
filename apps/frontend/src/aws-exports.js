@@ -9,7 +9,6 @@ const awsmobile = {
   aws_cognito_region: "us-east-1",
   // aws_user_pools_id: 'us-east-2_zG2SfHpXC',
   aws_user_pools_id: "us-east-1_BO2rSGqTd",
-
   aws_user_pools_web_client_id: "3cekddbq7ail1s50qt2thfle7u",
   oauth: {},
   aws_cognito_login_mechanism: [],

@@ -5,26 +5,22 @@ import SubmitCard from "./SubmitCard";
 import DateSelectorCard from "./SelectWeekCard";
 import { UserContext } from "./UserContext";
 import { getCurrentUser } from "../Auth/UserUtils";
-
+import { EvaluationModal } from "./EvaluationModal";
+import { Evaluations } from "./Evaluations";
 import {
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Box,
   IconButton,
   Card,
   CardBody,
   Avatar,
-  Flex,
   Text,
   Tabs,
   TabList,
   Tab,
-  Spacer,
   HStack,
-  VStack,
-  ButtonGroup,
 } from "@chakra-ui/react";
 
 import { TIMESHEET_DURATION, TIMEZONE } from "src/constants";
@@ -34,13 +30,16 @@ import moment, { Moment } from "moment-timezone";
 
 import apiClient from "../Auth/apiClient";
 import AggregationTable from "./AggregationTable";
-import { v4 as uuidv4 } from "uuid";
 import { UserSchema } from "../../schemas/UserSchema";
 
-import { SearchIcon, WarningIcon, DownloadIcon } from "@chakra-ui/icons";
+import {
+  SearchIcon,
+  WarningIcon,
+  DownloadIcon,
+  ChatIcon,
+} from "@chakra-ui/icons";
 import { Select, components } from "chakra-react-select";
-import { TimeSheetSchema } from "src/schemas/TimesheetSchema";
-import { CommentSchema, RowSchema } from "src/schemas/RowSchema";
+import { CommentSchema } from "src/schemas/RowSchema";
 import { getAllActiveCommentsOfType } from "./utils";
 import { Stack } from "react-bootstrap";
 import { Divider } from "@aws-amplify/ui-react";
@@ -146,6 +145,10 @@ function SearchEmployeeTimesheet({ employees, setSelected }) {
 interface WeeklyCommentSectionProps {
   weeklyComments: CommentSchema[];
   weeklyReports: CommentSchema[];
+}
+interface WeeklyEvaluationModalProps {
+  setWeeklyEvaluation: Function;
+  weeklyEvaluation: CommentSchema[];
 }
 
 // TODO: idk if we're keeping up just gonna remove bc doesnt look great atm
@@ -332,21 +335,30 @@ export default function Page() {
     }
 
     console.log("user exists???", user);
+    console.log("timesheets exist???", newCurrentTimesheets.length);
+    console.log("timesheets 0 ???", newCurrentTimesheets[0]);
+    //console.log("timehseets 3 ???", newCurrentTimesheets[0].DueDateSupervisor);
+
+    // can remove these checks when mock data is coming in correctly
+    // here set the duedate as the corresponding due dates for supervisor/associate
+    // set as "disabled" if dueDate.isBefore(selectedDate)
     user &&
+      newCurrentTimesheets &&
+      selectedDate &&
       apiClient.getUser(user.UserID).then(async (userInfo) => {
-        if (userInfo.Type === "Supervisor") {
-          const dueTimestamp = await apiClient.getSupervisorDueDate();
-          const duedate = moment.unix(dueTimestamp);
-          setDisabled(duedate.isBefore(selectedDate));
-          console.log("due date: ", duedate);
+        if (userInfo.Type === "Supervisor" && newCurrentTimesheets.length > 0) {
+          const duedate = newCurrentTimesheets[0].DueDateSupervisor;
+          //setDisabled(duedate.isBefore(selectedDate));
+          setdueDate(duedate);
+          console.log("due date: ", newCurrentTimesheets[0].DueDateSupervisor);
           console.log("selected date: ", selectedDate);
-          console.log("checking this boolean", duedate.isBefore(selectedDate));
+          //console.log("checking this boolean", duedate.isBefore(selectedDate));
           console.log("setting as disabled for supervisor", disabled);
         }
         if (userInfo.Type === "Associate") {
-          const AssociateDueDate = await apiClient.getAssociateDueDate();
-          const duedate = moment.unix(AssociateDueDate);
-          setDisabled(duedate.isBefore(selectedDate));
+          const duedate = newCurrentTimesheets[0].DueDateAssociate;
+          //setDisabled(duedate.isBefore(selectedDate));
+          setdueDate(duedate);
           console.log("setting as disabled for associate");
         }
       });
@@ -359,14 +371,6 @@ export default function Page() {
     dateToCheck.add(TIMESHEET_DURATION, "days");
 
     if (disabled) {
-      //if (dateToCheck.isAfter(dueDate, "days")) {
-      setDisabled(true);
-      console.log("DATE HAS PASSED, ", disabled);
-      console.log("Comparison, ", dateToCheck.isAfter(dueDate, "days"));
-      console.log("Current day", currentDate);
-      console.log("Date to check", dateToCheck);
-      console.log("Due date is , ", dueDate);
-
       return (
         <Alert status="error">
           <AlertIcon />
@@ -377,7 +381,7 @@ export default function Page() {
         </Alert>
       );
     } else {
-      const dueDuration = dateToCheck.diff(currentDate, "days");
+      const dueDuration = dateToCheck.diff(selectedDate, "days");
       setDisabled(false);
       return (
         <Alert status="info">
@@ -391,6 +395,35 @@ export default function Page() {
     }
   };
 
+  const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const updateCommentList = (newCommentList) => {
+    setComments(newCommentList);
+  };
+
+  // set the modal as open
+  const openEvaluationForm = () => {
+    setIsOpenCommentForm(true);
+  };
+
+  // set the modal as closed
+  const closeEvaluationForm = () => {
+    setIsOpenCommentForm(false);
+  };
+
+  // set the comment list based on a given comment and close the form
+  const handleCommentSubmit = (comment: Comment) => {
+    setComments([...comments, comment]);
+    closeEvaluationForm();
+  };
+
+  interface Comment {
+    AuthorID: string;
+    Type: CommentType;
+    Timestamp: number;
+    Content: string;
+  }
+
   return (
     <UserContext.Provider value={user}>
       <>
@@ -402,6 +435,25 @@ export default function Page() {
                 employees={associates}
                 setSelected={setSelectedUser}
               />
+
+              <IconButton
+                aria-label="Weekly Comments"
+                icon={<ChatIcon />}
+                onClick={openEvaluationForm}
+                minW="200px"
+              >
+                Weekly Comments
+              </IconButton>
+              {isOpenCommentForm && (
+                <EvaluationModal
+                  isOpen={isOpenCommentForm}
+                  onClose={closeEvaluationForm}
+                  onCommentSubmit={handleCommentSubmit}
+                  onCommentDelete={null}
+                  commentToEdit={null}
+                />
+              )}
+
               <IconButton aria-label="Download" icon={<DownloadIcon />} />
               <IconButton aria-label="Report" icon={<WarningIcon />} />
             </>
@@ -450,6 +502,16 @@ export default function Page() {
               </UserContext.Provider>
             )}
           </fieldset>
+          {
+            <Evaluations
+              commentList={comments}
+              openEvaluationForm={isOpenCommentForm}
+              updateCommentList={updateCommentList}
+              // handleModalOpen={openEvaluationForm}
+              // handleModalClose={closeEvaluationForm}
+              //handleCommentSubmit={handleCommentSubmit}
+            />
+          }
         </div>
       </>
     </UserContext.Provider>
