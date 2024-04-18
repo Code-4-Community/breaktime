@@ -360,16 +360,19 @@ export default function Page() {
           console.log("due date", dueDateMoment.format());
           const isDisable = currentDate.isAfter(dueDateMoment);
           console.log("disabling? ", isDisable);
-          setDisabled(isDisable);
+          //setDisabled(isDisable);
         }
       });
   };
 
   const renderWarning = () => {
+    const currentDate = moment();
+
     const dateToCheck = moment(selectedDate);
     dateToCheck.add(TIMESHEET_DURATION, "days");
-
-    if (disabled) {
+    if (currentDate.isAfter(dateToCheck, "days")) {
+      setDisabled(true);
+      console.log("DATE HAS PASSED, ", disabled);
       return (
         <Alert status="error">
           <AlertIcon />
@@ -380,7 +383,7 @@ export default function Page() {
         </Alert>
       );
     } else {
-      const dueDuration = dateToCheck.diff(selectedDate, "days");
+      const dueDuration = dateToCheck.diff(currentDate, "days");
       setDisabled(false);
       return (
         <Alert status="info">
@@ -393,6 +396,7 @@ export default function Page() {
       );
     }
   };
+
 
   const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
   const [isOpenAttendanceReport, setIsOpenAttendanceForm] = useState(false);
@@ -466,7 +470,11 @@ export default function Page() {
                 />
               )}
               <IconButton aria-label="Report" icon={<WarningIcon />} />
-              <Button onClick={openAttendanceReport} minW="100px">
+            </>
+          ) : (
+            <></>
+          )}
+                        <Button onClick={openAttendanceReport} minW="100px">
                 Attendance
               </Button>
               {isOpenAttendanceReport && (
@@ -475,10 +483,6 @@ export default function Page() {
                   onClose={closeAttendanceReport}
                 />
               )}
-            </>
-          ) : (
-            <></>
-          )}
           <IconButton
             aria-label="Download"
             icon={<DownloadIcon />}
