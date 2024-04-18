@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useTransition } from "react";
 import TimeTable from "./TimeTable";
 import { useEffect } from "react";
 import SubmitCard from "./SubmitCard";
@@ -219,6 +219,7 @@ export default function Page() {
 
   const [weeklyComments, setWeeklyComments] = useState<CommentSchema[]>([]);
   const [weeklyReports, setWeeklyReports] = useState<CommentSchema[]>([]);
+  const [dateToCheck, setDateToCheck] = useState(moment());
 
   // if the timesheet is disabled
   const [disabled, setDisabled] = useState(false);
@@ -304,8 +305,6 @@ export default function Page() {
   const updateDateRange = (date: Moment) => {
     setSelectedDate(date);
 
-    console.log("DATE IS UPDATING  and disabled is ", disabled);
-
     //TODO - Refactor this to use the constant in merge with contants branch
     setCurrentTimesheetsToDisplay(userTimesheets, date);
   };
@@ -332,16 +331,43 @@ export default function Page() {
     if (newCurrentTimesheets.length > 0) {
       changeTimesheet(newCurrentTimesheets[0]);
     }
+
+    console.log("timesheet " + newCurrentTimesheets[0]);
+
+    // here set the duedate as the corresponding due dates for supervisor/associate
+    // set as "disabled" if dueDate.isBefore(selectedDate)
+    let duedate: number;
+    user &&
+      selectedDate &&
+      apiClient.getUser(user.UserID).then(async (userInfo) => {
+        if (userInfo.Type === "Supervisor" && newCurrentTimesheets.length > 0) {
+          duedate = newCurrentTimesheets[0].DueDateSupervisor;
+          console.log("setting as disabled for supervisor");
+        } else if (
+          userInfo.Type === "Associate" &&
+          newCurrentTimesheets.length > 0
+        ) {
+          duedate = newCurrentTimesheets[0].DueDateAssociate;
+          console.log("setting as disabled for associate");
+        }
+
+        if (duedate !== undefined) {
+          const currentDate = moment();
+          const dueDateMoment = moment.unix(duedate);
+          console.log("current date", currentDate.format());
+          console.log("due date", dueDateMoment.format());
+          const isDisable = currentDate.isAfter(dueDateMoment);
+          console.log("disabling? ", isDisable);
+          setDisabled(isDisable);
+        }
+      });
   };
 
   const renderWarning = () => {
-    const currentDate = moment();
-
     const dateToCheck = moment(selectedDate);
     dateToCheck.add(TIMESHEET_DURATION, "days");
-    if (currentDate.isAfter(dateToCheck, "days")) {
-      setDisabled(true);
-      console.log("DATE HAS PASSED, ", disabled);
+
+    if (disabled) {
       return (
         <Alert status="error">
           <AlertIcon />
@@ -352,7 +378,7 @@ export default function Page() {
         </Alert>
       );
     } else {
-      const dueDuration = dateToCheck.diff(currentDate, "days");
+      const dueDuration = dateToCheck.diff(selectedDate, "days");
       setDisabled(false);
       return (
         <Alert status="info">
@@ -394,6 +420,7 @@ export default function Page() {
     Timestamp: number;
     Content: string;
   }
+
   return (
     <UserContext.Provider value={user}>
       <>

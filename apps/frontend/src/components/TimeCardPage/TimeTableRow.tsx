@@ -14,8 +14,6 @@ import { RowSchema } from "../../schemas/RowSchema";
 import ApiClient from "src/components/Auth/apiClient";
 
 import * as updateSchemas from "src/schemas/backend/UpdateTimesheet";
-import apiClient from "src/components/Auth/apiClient";
-import { UserSchema } from "src/schemas/UserSchema";
 
 interface RowProps {
   row: RowSchema;

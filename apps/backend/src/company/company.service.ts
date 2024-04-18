@@ -5,21 +5,18 @@ import { CompanyModel } from "./Company.model";
 
 @Injectable()
 export class CompanyService {
-    constructor(private cognitoService: CognitoService) { }
+  constructor(private cognitoService: CognitoService) {}
 
-    /**
-     * Gets a company information based on that company's id.
-     * @param companyId
-     * @returns
-    */
-    public async getCompany(companyId: string): Promise<CompanyModel> {
-        try{
-            return await GetCompanyData(companyId) as Promise<CompanyModel>
-        }  
-        catch(e) {
-            throw new Error("Unable to get company data")
-        }
-
+  /**
+   * Gets a company information based on that company's id.
+   * @param companyId
+   * @returns
+   */
+  public async getCompany(companyId: string): Promise<CompanyModel> {
+    try {
+      return (await GetCompanyData(companyId)) as Promise<CompanyModel>;
+    } catch (e) {
+      throw new Error("Unable to get company data");
     }
-
+  }
 }

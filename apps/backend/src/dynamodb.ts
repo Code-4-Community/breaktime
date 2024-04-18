@@ -122,11 +122,11 @@ export async function GetCompanyData(
   // Parse the items into our expected Company schema.
   const companyData = unmarshalledItems.map((i) => CompanySchema.parse(i));
 
-  console.log(companyData)
+  console.log(companyData);
 
   // There should only ever be one entry per company in the table (since there's no sort key, the partition key is the only unique index used)
   if (companyData.length != 1) {
-    throw new Error( 
+    throw new Error(
       "Invalid entries in DynamoDB, should only have a single entry per user"
     );
   }
