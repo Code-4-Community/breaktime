@@ -81,7 +81,11 @@ export class ApiClient {
 
   // TODO: setup endpoint for associate/supervisor/admin so it returns a list of timesheets for given uuid
   public async getUserTimesheets(UUID: string): Promise<TimeSheetSchema[]> {
-    return this.get("auth/timesheet") as Promise<TimeSheetSchema[]>;
+    let timesheets = (await this.get("auth/timesheet")) as TimeSheetSchema[];
+    return timesheets.map((timesheet) => {
+      console.log("parsed timesheet", TimeSheetSchema.parse(timesheet));
+      return TimeSheetSchema.parse(timesheet);
+    });
   }
 
   public async downloadTimesheet(uuid: string, timesheetId: string) {
@@ -138,9 +142,13 @@ export class ApiClient {
     try {
       await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
         var userType = {};
+        console.log("userlist", userList);
 
         // set current user's type
-        if (userList[0].Type === "breaktime-associate") {
+        if (
+          userList[0].Type === "breaktime-associate" ||
+          userList[0].userRole === "breaktime-associate"
+        ) {
           userType = UserTypes.Associate;
         } else {
           userType = UserTypes.Supervisor;

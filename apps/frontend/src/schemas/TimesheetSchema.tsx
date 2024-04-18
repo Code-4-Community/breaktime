@@ -11,6 +11,8 @@ export const TimeSheetSchema = z.object({
   TableData: z.array(RowSchema),
   ScheduleTableData: z.union([z.undefined(), z.array(ScheduledRowSchema)]),
   WeekNotes: z.union([z.undefined(), z.array(CommentSchema)]),
+  DueDateAssociate: z.number().default(1713104734),
+  DueDateSupervisor: z.number().default(1713709534),
 });
 
 export type TimeSheetSchema = z.infer<typeof TimeSheetSchema>;

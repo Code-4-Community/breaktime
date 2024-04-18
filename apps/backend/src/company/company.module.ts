@@ -5,10 +5,9 @@ import { CompanyService } from "./company.service";
 import { CompanyController } from "./company.controller";
 
 @Module({
-    imports: [],
-    providers: [CompanyService, CognitoService, CognitoWrapper],
-    controllers: [CompanyController],
-    exports: [CompanyService],
+  imports: [],
+  providers: [CompanyService, CognitoService, CognitoWrapper],
+  controllers: [CompanyController],
+  exports: [CompanyService],
 })
-
-export class CompanyModule{}
+export class CompanyModule {}
