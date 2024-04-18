@@ -14,6 +14,7 @@ import {
 import { DEFAULT_COLORS } from "src/constants";
 import { BiMessageDetail } from "react-icons/bi";
 import { NotificationService } from "./notifications";
+import apiClient from "../Auth/apiClient";
 
 enum MessageTypes {
   Reminder = "Reminder",
@@ -70,10 +71,11 @@ export default function Messages() {
                   <CloseButton
                     onClick={() => {
                       deleteMessage(index);
-                      notif.addSubscription("swim8122@gmail.com", "2", [
-                        "1",
-                        "3",
-                      ]);
+                      // notif.addSubscription("swim8122@gmail.com", "2", [
+                      //   "1",
+                      //   "3",
+                      // ]);
+                      apiClient.sendEmail();
                     }}
                   />
                   {message.type + ": " + message.body}

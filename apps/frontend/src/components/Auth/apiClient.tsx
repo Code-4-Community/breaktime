@@ -150,6 +150,10 @@ export class ApiClient {
     ];
   }
 
+  public async sendEmail() {
+    this.post("auth/sendEmail", "");
+  }
+
   //TODO: hook up to backend
   public async saveComment(
     comment: string,

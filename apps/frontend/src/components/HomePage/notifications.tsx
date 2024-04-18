@@ -9,7 +9,7 @@ export class NotificationService {
   topicARN: string;
 
   constructor() {
-    this.client = new SNSClient(process.env);
+    this.client = new SNSClient();
     this.topicARN =
       "arn:aws:sns:us-east-1:489881683177:Breaktime-Timesheet-Updates";
   }
