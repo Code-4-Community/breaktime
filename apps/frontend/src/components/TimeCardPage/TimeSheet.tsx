@@ -220,6 +220,9 @@ export default function Page() {
   const [weeklyComments, setWeeklyComments] = useState<CommentSchema[]>([]);
   const [weeklyReports, setWeeklyReports] = useState<CommentSchema[]>([]);
 
+  // if the timesheet is disabled
+  const [disabled, setDisabled] = useState(false);
+
   // this hook should always run first
   // TODO: ensure all state variables have local variables
   // TODO: add 'await' before getCurrentUser()??
@@ -241,16 +244,11 @@ export default function Page() {
 
         setSelectedUser(userInfo);
       });
-
     });
 
-   
     // if employee setSelectedUSer to be userinfo
     // if supervisor/admin get all users
     // set selected user
-
-   
-
   }, []);
 
   const getUpdatedTimesheet = (userId) => {
@@ -305,6 +303,9 @@ export default function Page() {
 
   const updateDateRange = (date: Moment) => {
     setSelectedDate(date);
+
+    console.log("DATE IS UPDATING  and disabled is ", disabled);
+
     //TODO - Refactor this to use the constant in merge with contants branch
     setCurrentTimesheetsToDisplay(userTimesheets, date);
   };
@@ -339,6 +340,8 @@ export default function Page() {
     const dateToCheck = moment(selectedDate);
     dateToCheck.add(TIMESHEET_DURATION, "days");
     if (currentDate.isAfter(dateToCheck, "days")) {
+      setDisabled(true);
+      console.log("DATE HAS PASSED, ", disabled);
       return (
         <Alert status="error">
           <AlertIcon />
@@ -350,6 +353,7 @@ export default function Page() {
       );
     } else {
       const dueDuration = dateToCheck.diff(currentDate, "days");
+      setDisabled(false);
       return (
         <Alert status="info">
           <AlertIcon />
@@ -362,7 +366,7 @@ export default function Page() {
     }
   };
 
-
+  const [disabled, setDisabled] = useState(false);
   const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const updateCommentList = (newCommentList) => {
@@ -431,11 +435,13 @@ export default function Page() {
             onDateChange={updateDateRange}
             date={selectedDate}
           />
+
           {selectedTimesheet && (
             <SubmitCard
               timesheetId={selectedTimesheet.TimesheetID}
               associateId={selectedTimesheet.UserID}
               timesheetStatus={selectedTimesheet.Status}
+              submitDisabled={disabled}
               refreshTimesheetCallback={forceRefreshTimesheet}
             />
           )}
