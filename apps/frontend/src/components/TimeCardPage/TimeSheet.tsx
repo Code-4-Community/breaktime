@@ -20,6 +20,7 @@ import {
   Tabs,
   TabList,
   Tab,
+  Button,
   HStack,
 } from "@chakra-ui/react";
 
@@ -43,6 +44,7 @@ import { CommentSchema } from "src/schemas/RowSchema";
 import { getAllActiveCommentsOfType } from "./utils";
 import { Stack } from "react-bootstrap";
 import { Divider } from "@aws-amplify/ui-react";
+import { AttendanceModal } from "./AttendanceModal";
 
 // Always adjust local timezone to Breaktime's timezone
 moment.tz.setDefault(TIMEZONE);
@@ -367,6 +369,7 @@ export default function Page() {
   };
 
   const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
+  const [isOpenAttendanceReport, setIsOpenAttendanceForm] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const updateCommentList = (newCommentList) => {
     setComments(newCommentList);
@@ -380,6 +383,14 @@ export default function Page() {
   // set the modal as closed
   const closeEvaluationForm = () => {
     setIsOpenCommentForm(false);
+  };
+
+  const openAttendanceReport = () => {
+    setIsOpenAttendanceForm(true);
+  };
+
+  const closeAttendanceReport = () => {
+    setIsOpenAttendanceForm(false);
   };
 
   // set the comment list based on a given comment and close the form
@@ -426,6 +437,13 @@ export default function Page() {
 
               <IconButton aria-label="Download" icon={<DownloadIcon />} />
               <IconButton aria-label="Report" icon={<WarningIcon />} />
+              <Button onClick={openAttendanceReport}>Attendance</Button>
+              {isOpenAttendanceReport && (
+                <AttendanceModal
+                  isOpen={isOpenAttendanceReport}
+                  onClose={closeAttendanceReport}
+                />
+              )}
             </>
           ) : (
             <></>
