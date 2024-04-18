@@ -427,17 +427,16 @@ export default function Page() {
                   commentToEdit={null}
                 />
               )}
-
-              <IconButton
-                aria-label="Download"
-                icon={<DownloadIcon />}
-                onClick={downloadTimesheet}
-              />
               <IconButton aria-label="Report" icon={<WarningIcon />} />
             </>
           ) : (
             <></>
           )}
+          <IconButton
+            aria-label="Download"
+            icon={<DownloadIcon />}
+            onClick={downloadTimesheet}
+          />
           <DateSelectorCard
             onDateChange={updateDateRange}
             date={selectedDate}
