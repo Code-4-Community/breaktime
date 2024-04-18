@@ -362,8 +362,7 @@ export default function Page() {
     }
   };
 
-  // use this to control whether the timesheet is disabled or not
-  const disabled = false;
+
   const [isOpenCommentForm, setIsOpenCommentForm] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const updateCommentList = (newCommentList) => {
@@ -392,7 +391,6 @@ export default function Page() {
     Timestamp: number;
     Content: string;
   }
-
   return (
     <UserContext.Provider value={user}>
       <>
