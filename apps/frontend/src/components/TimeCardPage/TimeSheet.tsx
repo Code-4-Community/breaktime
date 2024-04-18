@@ -343,7 +343,6 @@ export default function Page() {
     // here set the duedate as the corresponding due dates for supervisor/associate
     // set as "disabled" if dueDate.isBefore(selectedDate)
     user &&
-      newCurrentTimesheets &&
       selectedDate &&
       apiClient.getUser(user.UserID).then(async (userInfo) => {
         if (userInfo.Type === "Supervisor" && newCurrentTimesheets.length > 0) {
