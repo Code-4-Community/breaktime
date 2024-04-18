@@ -10,14 +10,11 @@ import { useToast } from "@chakra-ui/react";
 import { UserContext } from "./UserContext";
 import { TimesheetStatus } from "src/schemas/TimesheetSchema";
 import { createToast } from "./utils";
-import TimeTable from "./TimeTable";
-import { TABLE_COLUMNS, CommentType } from "./types";
 
 interface submitCardProps {
   timesheetId: number;
   associateId: string;
   timesheetStatus: StatusType;
-  submitDisabled: boolean;
   refreshTimesheetCallback: Function;
 }
 
@@ -76,7 +73,6 @@ export default function SubmitCard(props: submitCardProps) {
 
   const submitAction = async () => {
     console.log("Current user id:", currUser.UserID);
-    console.log("IN SUBMIT CARD", props.submitDisabled);
     let statusSubmissionType: string;
 
     // Determine the appropriate status entry to match up with the logged in user's role
@@ -157,11 +153,9 @@ export default function SubmitCard(props: submitCardProps) {
         className="mb-2 text-center"
       >
         <CardBody>
-          <fieldset disabled={props.submitDisabled}>
-            <Button onClick={submitAction}>
-              {timesheetSubmitted ? "Resubmit" : "Submit!"}
-            </Button>
-          </fieldset>
+          <Button onClick={submitAction}>
+            {timesheetSubmitted ? "Resubmit" : "Submit!"}
+          </Button>
         </CardBody>
         <CardFooter>
           {/* TODO: The AuthorIDs below should all be replaced with calls to the API and then have a User profile card there instead (or at least the name, rather than ID lol) */}
