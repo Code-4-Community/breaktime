@@ -7,8 +7,9 @@ import {
   Query,
   UseGuards,
   NotFoundException,
+  Header,
 } from "@nestjs/common";
-import { AuthService } from "./auth.service";
+import { AuthService, ValidatedUser } from "./auth.service";
 import {
   getTimesheetsForUsersInGivenTimeFrame,
   doUUIDSExistInCompanies,
@@ -23,6 +24,10 @@ import { RolesGuard } from "src/utils/guards/roles.guard";
 import { UploadTimesheet } from "src/db/timesheets/UploadTimesheet";
 import { TimesheetUpdateRequest } from "src/db/schemas/UpdateTimesheet";
 import { Formatter } from "src/db/timesheets/Formatter";
+import { User } from "src/utils/decorators/user.decorator";
+
+import { AsyncParser } from "@json2csv/node";
+
 
 @Controller("auth")
 @UseGuards(RolesGuard)
@@ -127,6 +132,24 @@ export class AuthController {
     }
 
     //await getTimesheetsForUsersInGivenTimeFrame(['77566d69-3b61-452a-afe8-73dcda96f876']);
+  }
+  
+  @Get("exportTimesheet")
+  @Header('Content-Type', 'text/csv')
+  @Header('Content-Disposition', 'attachment; filename="timesheet.csv"')
+  public async exportTimesheet(
+    @Headers() headers: any,
+    @User() user: ValidatedUser
+  ) {
+    const jsonData = [
+      { shiftType: 'Time Worked', date: '04/07/24', clockIn: '8:00AM', clockOut: '12:00PM', hoursWorked: '4', comments: '', reports: 'Left Early: 11:30AM\nReported by David Levin' },
+      { shiftType: 'Time Worked', date: '04/09/24', clockIn: '9:00AM', clockOut: '1:30PM', hoursWorked: '4', comments: '"Fantastic job handling tasks today"\nDavid Levin\n\n"Swapped shift with John"\nNeeti Desai', reports: '' }
+    ];
+
+    const parser = new AsyncParser()
+    const csv = await parser.parse(jsonData).promise()
+
+    return csv
   }
 }
 export type uuidToTimesheetMapping = {

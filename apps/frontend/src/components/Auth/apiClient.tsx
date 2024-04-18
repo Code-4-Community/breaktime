@@ -3,6 +3,8 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
+import React, { useState } from "react";
+import { getCurrentUser } from "../Auth/UserUtils";
 import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers";
 
 const defaultBaseUrl =
@@ -86,15 +88,24 @@ export class ApiClient {
     });
   }
 
+  public async downloadTimesheet(uuid: string, timesheetId: string) {
+    const csv = (await this.get("auth/exportTimesheet")) as string;
+    const url = window.URL.createObjectURL(new Blob([csv]));
+
+    // Create a temporary download link that gets 'clicked' and downloads the csv file
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "timesheet.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
   public async updateUserTimesheet(updatedEntry): Promise<Boolean> {
     //TODO - Format json?
     return this.post("/auth/timesheet", {
       timesheet: updatedEntry,
     }) as Promise<Boolean>;
-  }
-
-  public async getPasswordTest(): Promise<string> {
-    return this.get("/auth/timesheet") as Promise<string>;
   }
 
   // functon that returns company data based on companyId passed in
@@ -127,8 +138,6 @@ export class ApiClient {
     const userId = UserID;
 
     var userConverted = {};
-
-    console.log("passed into getUser", UserID);
 
     try {
       await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {

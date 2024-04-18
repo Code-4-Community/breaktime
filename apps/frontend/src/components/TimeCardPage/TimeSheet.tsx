@@ -414,6 +414,10 @@ export default function Page() {
     closeEvaluationForm();
   };
 
+  const downloadTimesheet = () => {
+    apiClient.downloadTimesheet(user.UserID, selectedTimesheet.TimesheetID);
+  };
+
   interface Comment {
     AuthorID: string;
     Type: CommentType;
@@ -450,13 +454,16 @@ export default function Page() {
                   commentToEdit={null}
                 />
               )}
-
-              <IconButton aria-label="Download" icon={<DownloadIcon />} />
               <IconButton aria-label="Report" icon={<WarningIcon />} />
             </>
           ) : (
             <></>
           )}
+          <IconButton
+            aria-label="Download"
+            icon={<DownloadIcon />}
+            onClick={downloadTimesheet}
+          />
           <DateSelectorCard
             onDateChange={updateDateRange}
             date={selectedDate}
