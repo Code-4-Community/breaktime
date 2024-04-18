@@ -388,6 +388,10 @@ export default function Page() {
     closeEvaluationForm();
   };
 
+  const downloadTimesheet = () => {
+    apiClient.downloadTimesheet(user.UserID, selectedTimesheet.TimesheetID);
+  };
+
   interface Comment {
     AuthorID: string;
     Type: CommentType;
@@ -424,7 +428,11 @@ export default function Page() {
                 />
               )}
 
-              <IconButton aria-label="Download" icon={<DownloadIcon />} />
+              <IconButton
+                aria-label="Download"
+                icon={<DownloadIcon />}
+                onClick={downloadTimesheet}
+              />
               <IconButton aria-label="Report" icon={<WarningIcon />} />
             </>
           ) : (

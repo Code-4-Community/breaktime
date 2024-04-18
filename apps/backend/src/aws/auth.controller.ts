@@ -7,8 +7,9 @@ import {
   Query,
   UseGuards,
   NotFoundException,
+  Header,
 } from "@nestjs/common";
-import { AuthService } from "./auth.service";
+import { AuthService, ValidatedUser } from "./auth.service";
 import {
   getTimesheetsForUsersInGivenTimeFrame,
   doUUIDSExistInCompanies,
@@ -23,6 +24,10 @@ import { RolesGuard } from "src/utils/guards/roles.guard";
 import { UploadTimesheet } from "src/db/timesheets/UploadTimesheet";
 import { TimesheetUpdateRequest } from "src/db/schemas/UpdateTimesheet";
 import { Formatter } from "src/db/timesheets/Formatter";
+import { User } from "src/utils/decorators/user.decorator";
+
+import { AsyncParser } from "@json2csv/node";
+
 
 @Controller("auth")
 @UseGuards(RolesGuard)
@@ -127,6 +132,21 @@ export class AuthController {
     }
 
     //await getTimesheetsForUsersInGivenTimeFrame(['77566d69-3b61-452a-afe8-73dcda96f876']);
+  }
+  
+  @Get("exportTimesheet")
+  @Header('Content-Type', 'text/csv')
+  @Header('Content-Disposition', 'attachment; filename="timesheet.csv"')
+  public async exportTimesheet(
+    @Headers() headers: any,
+    @User() user: ValidatedUser
+  ) {
+    const jsonData = [{ name: 'Alice', age: 28 }, { name: 'Bob', age: 35 } ];
+
+    const parser = new AsyncParser()
+    const csv = await parser.parse(jsonData).promise()
+
+    return csv
   }
 }
 export type uuidToTimesheetMapping = {

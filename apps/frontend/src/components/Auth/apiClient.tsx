@@ -3,9 +3,9 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { getCurrentUser } from "../Auth/UserUtils";
-import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers"
+import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers";
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -24,11 +24,7 @@ interface ApiClientOptions {
 //   origin: 'https://your-web-app.com'
 // }));
 
-
-
-
-export class ApiClient { 
-  
+export class ApiClient {
   private axiosInstance: AxiosInstance;
 
   constructor(
@@ -88,6 +84,19 @@ export class ApiClient {
     return this.get("auth/timesheet") as Promise<TimeSheetSchema[]>;
   }
 
+  public async downloadTimesheet(uuid: string, timesheetId: string) {
+    const csv = (await this.get("auth/exportTimesheet")) as string;
+    const url = window.URL.createObjectURL(new Blob([csv]));
+
+    // Create a temporary download link that gets 'clicked' and downloads the csv file
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "timesheet.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
   public async updateUserTimesheet(updatedEntry): Promise<Boolean> {
     //TODO - Format json?
     return this.post("/auth/timesheet", {
@@ -95,17 +104,12 @@ export class ApiClient {
     }) as Promise<Boolean>;
   }
 
-  public async getPasswordTest(): Promise<string> {
-    return this.get("/auth/timesheet") as Promise<string>;
-  }
-
-  // functon that returns company data based on companyId passed in 
+  // functon that returns company data based on companyId passed in
   public async getCompany(companyID: String): Promise<CompanySchema> {
     try {
-      return await this.get(`/company/companyInfo?companyId=${companyID}`)
-    }
-    catch (e) {
-      throw new Error("Unable to get company data")
+      return await this.get(`/company/companyInfo?companyId=${companyID}`);
+    } catch (e) {
+      throw new Error("Unable to get company data");
     }
   }
 
@@ -114,34 +118,32 @@ export class ApiClient {
     var allUsers;
 
     try {
-      allUsers = await Promise.all(userIds.map(userId => this.getUser(userId)));
-    }
-    catch (e) {
-      throw new Error("Unable to get user data")
+      allUsers = await Promise.all(
+        userIds.map((userId) => this.getUser(userId))
+      );
+    } catch (e) {
+      throw new Error("Unable to get user data");
     }
 
-    return allUsers
+    return allUsers;
   }
 
-  
   // TODO: setup endpoint for getting user information
   // all roles -> return UserSchema for the current user that is logged in
   public async getUser(UserID: String): Promise<UserSchema> {
-    const userId = UserID
+    const userId = UserID;
 
-    var userConverted = {}
+    var userConverted = {};
 
     try {
       await this.get(`/user/usersById?userIds[]=${userId}`).then((userList) => {
-
-        var userType = {}
+        var userType = {};
 
         // set current user's type
-        if (userList[0].Type === 'breaktime-associate') {
-          userType = UserTypes.Associate
-        }
-        else {
-          userType = UserTypes.Supervisor
+        if (userList[0].Type === "breaktime-associate") {
+          userType = UserTypes.Associate;
+        } else {
+          userType = UserTypes.Supervisor;
         }
 
         // create current user
@@ -149,19 +151,14 @@ export class ApiClient {
           UserID: userList[0].userID,
           FirstName: userList[0].firstName,
           LastName: userList[0].lastName,
-          Type: userType
+          Type: userType,
         };
-
-      })
+      });
+    } catch (e) {
+      throw new Error("Unable to get user data");
     }
 
-    catch (e) {
-      throw new Error("Unable to get user data")
-    }
-
-  
-    return userConverted
-
+    return userConverted;
   }
 
   //TODO: hook up to backend, izzys pr has it just not merged yet
