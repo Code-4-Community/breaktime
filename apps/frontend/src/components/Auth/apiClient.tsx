@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from "axios";
 import { TimeSheetSchema } from "../../schemas/TimesheetSchema";
 import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
+import { ThemeProvider } from "react-bootstrap";
 import React, { useState } from 'react';
 import { getCurrentUser } from "../Auth/UserUtils";
 import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers"
@@ -175,14 +176,6 @@ export class ApiClient {
         Picture: "https://www.google.com/panda.png",
       },
     ];
-  }
-
-  //TODO: hook up to backend
-  public async saveComment(
-    comment: string,
-    timesheetID: number
-  ): Promise<Boolean> {
-    return true;
   }
 
   //TODO: hook up to backend
