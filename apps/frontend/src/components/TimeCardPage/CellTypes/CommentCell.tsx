@@ -11,17 +11,21 @@ import ShowReportModal from "./CommentModals/ShowReportModal";
 
 interface CommentProps {
   updateFields: Function
+  updateFields: Function
   comments: CommentSchema[] | undefined;
   date: number;
   timesheetID: number;
+  row: RowSchema;
   row: RowSchema;
 }
 
 export function CommentCell(props: CommentProps) {
   const [currentComments, setCurrentComments] = useState(
     getAllActiveCommentsOfType(CommentType.Comment, props.comments)
+    getAllActiveCommentsOfType(CommentType.Comment, props.comments)
   );
   const [reports, setReports] = useState(
+    getAllActiveCommentsOfType(CommentType.Report, props.comments) as ReportSchema[]
     getAllActiveCommentsOfType(CommentType.Report, props.comments) as ReportSchema[]
   );
   const [isEditable, setisEditable] = useState(false);
@@ -43,12 +47,17 @@ export function CommentCell(props: CommentProps) {
         timesheetID={props.timesheetID}
         row={props.row}
         updateFields={props.updateFields}
+        timesheetID={props.timesheetID}
+        row={props.row}
+        updateFields={props.updateFields}
       />
       <ShowReportModal
+        date={props.date}
         date={props.date}
         setReports={setReports}
         reports={reports}
         isEditable={isEditable}
+        timesheetID={props.timesheetID}
         timesheetID={props.timesheetID}
       />
     </Stack>
