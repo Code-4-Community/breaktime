@@ -5,7 +5,8 @@ import { UserSchema } from "../../schemas/UserSchema";
 import { ReportOptions, UserTypes } from "../TimeCardPage/types";
 import React, { useState } from 'react';
 import { getCurrentUser } from "../Auth/UserUtils";
-import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers"
+import { CompanySchema } from "../../../../backend/src/db/schemas/CompanyUsers";
+import { AttendanceSchemaType } from "../../../../backend/src/db/Timesheet"
 
 const defaultBaseUrl =
   process.env.REACT_APP_API_BASE_URL ?? "http://localhost:3000";
@@ -23,6 +24,8 @@ interface ApiClientOptions {
 // app.use(cors({
 //   origin: 'https://your-web-app.com'
 // }));
+
+
 
 
 
@@ -97,6 +100,12 @@ export class ApiClient {
 
   public async getPasswordTest(): Promise<string> {
     return this.get("/auth/timesheet") as Promise<string>;
+  }
+
+
+  // function that returns attendance rates for a user based on the timesheet id passed in
+  public async getAttendance(timeSheetId: string): Promise<AttendanceSchemaType> {
+    return this.get("/attendance") as Promise<AttendanceSchemaType>;
   }
 
   // functon that returns company data based on companyId passed in 

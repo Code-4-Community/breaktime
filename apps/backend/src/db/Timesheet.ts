@@ -29,6 +29,45 @@ export const TimeEntrySchema = z.object({
   EndDateTime: z.number(),
 });
 
+// // new enum
+// enum AttendanceType {ABSENT = "Absent", ON_TIME = "On Time", LATE = "Late", EARLY = "Early"}
+
+// // new temporary schema
+// export const newTimeEntrySchema = z.object({
+//   StartDateTime: z.number(),
+//   EndDateTime: z.number(),
+//   Attendance: z.array(z.enum([
+//     AttendanceType.ABSENT,
+//     AttendanceType.ON_TIME,
+//     AttendanceType.LATE,
+//     AttendanceType.EARLY])).optional()
+// });
+
+// "z"/zod checks types at runtime
+
+
+// represents a singular timesheet's report 
+// (default value of -1 for the monthAttendance and totalAttendance fields for now)
+const AttendanceReport = z.object({
+  totalShifts: z.number().default(-1),
+  absentShifts: z.number().default(- 1),
+  lateShifts: z.number().default(-1),
+  earlyOutShifts: z.number().default(-1)
+});
+
+// schema for attendance object to be outputted by endpoint
+const AttendanceSchema = z.object({
+  timesheetId: z.string(),
+  weekAttendance: AttendanceReport,
+  monthAttendance: AttendanceReport,
+  totalAttendance: AttendanceReport
+});
+
+// converts zod object to typescript type to use as a return schema for a function
+export type AttendanceSchemaType = z.infer<typeof AttendanceSchema>;
+
+
+
 /**
  * Represents the database schema for the status of a timesheet. This could be one of the following types:
  * -- HoursSubmitted (Associate has submitted their hours worked)
